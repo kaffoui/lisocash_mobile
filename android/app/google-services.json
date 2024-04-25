@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "845217810394",
+    "project_id": "lisocash-9980b",
+    "storage_bucket": "lisocash-9980b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845217810394:android:9a68f9d3d90a2dc2da22e3",
+        "android_client_info": {
+          "package_name": "com.example.lisocash"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvhea2gaEQq_pSAFoJ4QtaxotOPKJqd6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
