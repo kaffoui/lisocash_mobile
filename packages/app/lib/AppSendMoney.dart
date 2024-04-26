@@ -59,6 +59,7 @@ class _AppSendMoneyState extends State<AppSendMoney> {
     final _pays = await Preferences().getPaysListFromLocal();
     final _initialPays = await Fonctions().getPaysFromIp();
     setState(() {
+      _pays.sort((a, b) => a.nom!.toLowerCase().compareTo(b.nom!.toLowerCase()));
       pays.clear();
       pays.addAll(_pays);
       initialPays = _initialPays;
@@ -93,87 +94,78 @@ class _AppSendMoneyState extends State<AppSendMoney> {
           style: Style.defaultTextStyle(),
         ),
       ),
-      body: MyBodyPage(
-        backColor: backgroundColor,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-          child: Container(
-            color: Colors.white.withOpacity(.9),
+      body: Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(12.0),
             child: Column(
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(12.0),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        children: [
-                          Container(
-                            child: Text(
-                              "Pays de destination",
-                              style: Style.defaultTextStyle(),
-                            ),
-                          ),
-                        ],
+                Row(
+                  children: [
+                    Container(
+                      child: Text(
+                        "Pays de destination",
+                        style: Style.defaultTextStyle(),
                       ),
-                      if (initialPays != null && pays.isNotEmpty)
-                        NDropDownWidget(
-                          initialObject: initialPays,
-                          listObjet: pays,
-                          buildItem: (pays) {
-                            final _pays = pays as Pays;
-                            return NDropDownModelWidget(
-                              title: "${_pays.nom}",
-                              imgLink: _pays.url_drapeau,
-                            );
-                          },
-                          onChangedDropDownValue: (value) {
-                            setState(() {
-                              initialPays = value;
-                            });
-                          },
-                        ),
-                      if (initialPays == null && pays.isEmpty)
-                        Column(
-                          children: [
-                            SizedBox(height: 12.0),
-                            NLoadingWidget(width: 20.0, height: 20.0),
-                          ],
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Container(
-                  padding: EdgeInsets.all(12.0),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        children: [
-                          Container(
-                            child: Text(
-                              "Montant à envoyer",
-                              style: Style.defaultTextStyle(),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: <Widget>[
-                          SizedBox(height: 12.0),
-                          NTextInputWidget(
-                            border: Border.all(color: Colors.transparent),
-                            showUnderline: true,
-                          ),
-                          SizedBox(height: 12.0),
-                          NTextInputWidget(),
-                        ],
-                      ),
+                if (initialPays != null && pays.isNotEmpty)
+                  NDropDownWidget(
+                    initialObject: initialPays,
+                    listObjet: pays,
+                    buildItem: (pays) {
+                      final _pays = pays as Pays;
+                      return NDropDownModelWidget(
+                        title: "${_pays.nom}",
+                        imgLink: _pays.url_drapeau,
+                      );
+                    },
+                    onChangedDropDownValue: (value) {
+                      setState(() {
+                        initialPays = value;
+                      });
+                    },
+                  ),
+                if (initialPays == null && pays.isEmpty)
+                  Column(
+                    children: [
+                      SizedBox(height: 12.0),
+                      NLoadingWidget(width: 20.0, height: 20.0),
                     ],
                   ),
-                )
               ],
             ),
           ),
-        ),
+          Container(
+            padding: EdgeInsets.all(12.0),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: [
+                    Container(
+                      child: Text(
+                        "Montant à envoyer",
+                        style: Style.defaultTextStyle(),
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    SizedBox(height: 12.0),
+                    NTextInputWidget(
+                      border: Border.all(color: Colors.transparent),
+                      showUnderline: true,
+                    ),
+                    SizedBox(height: 12.0),
+                    NTextInputWidget(),
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
