@@ -46,10 +46,12 @@ Future<void> main() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -90,7 +92,8 @@ class RootMain extends StatelessWidget {
         ),
         useMaterial3: true,
         iconTheme: IconThemeData(color: Colors.white, size: 16.0),
-        appBarTheme: AppBarTheme(elevation: 0.0, color: Constants.kAccentColor, centerTitle: true),
+        appBarTheme: AppBarTheme(
+            elevation: 0.0, color: Constants.kAccentColor, centerTitle: true),
         scaffoldBackgroundColor: Colors.white,
         dividerColor: Constants.kPrimaryColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -99,6 +102,7 @@ class RootMain extends StatelessWidget {
               displayColor: Constants.kTextDefaultColor,
               fontFamily: GoogleFonts.aBeeZee().fontFamily,
             ),
+        cardColor: Colors.white,
       ),
       home: SplashScreenPage(),
       localizationsDelegates: [

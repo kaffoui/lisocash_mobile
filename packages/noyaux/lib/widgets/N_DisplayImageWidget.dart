@@ -48,7 +48,6 @@ class NDisplayImageWidget extends StatefulWidget {
 class _NDisplayImageWidgetState extends State<NDisplayImageWidget> {
   @override
   void initState() {
-    print("img display image: ${widget.imageLink}");
     super.initState();
   }
 

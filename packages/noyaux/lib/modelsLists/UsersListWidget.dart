@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/constants.dart';
 import '../constants/fonctions.dart';
+import '../models/Pays.dart';
 import '../models/Users.dart';
 import '../modelsVues/UsersVue.dart';
 import '../services/Preferences.dart';
@@ -40,7 +41,8 @@ class UsersListWidget extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final Color? backColor;
   final Users? initialUsers, firstUsersInList;
-  final String? title;
+  final String? title, customMessage;
+  final Pays? filterByPays;
   final List<Users>? list;
 
   const UsersListWidget({
@@ -76,6 +78,8 @@ class UsersListWidget extends StatefulWidget {
     this.showAsSuggestedTextInputWidget = false,
     this.list,
     this.removeMe = false,
+    this.filterByPays,
+    this.customMessage,
   });
 
   @override
@@ -123,13 +127,16 @@ class _UsersListWidgetState extends State<UsersListWidget> {
                       listSource.insert(0, widget.firstUsersInList!);
                     }
                     // print("Initial data ${widget.initialUsers}");
-                    selectedUsers = widget.initialUsers != null && !widget.showAsSuggestedTextInputWidget!
-                        ? listSource.contains(widget.initialUsers)
-                            ? listSource.firstWhere((element) => element.id == widget.initialUsers!.id)
-                            : listSource[0]
-                        : listSource[0];
+                    selectedUsers =
+                        widget.initialUsers != null && !widget.showAsSuggestedTextInputWidget!
+                            ? listSource.contains(widget.initialUsers)
+                                ? listSource
+                                    .firstWhere((element) => element.id == widget.initialUsers!.id)
+                                : listSource[0]
+                            : listSource[0];
                   }
-                  if ((widget.onItemPressed != null && widget.showAsDropDown == true) || widget.press == true) widget.onItemPressed!(selectedUsers);
+                  if ((widget.onItemPressed != null && widget.showAsDropDown == true) ||
+                      widget.press == true) widget.onItemPressed!(selectedUsers);
 
                   isLoading = false;
                 })
@@ -207,8 +214,14 @@ class _UsersListWidgetState extends State<UsersListWidget> {
     final theme = Theme.of(context);
     themeRecherche = Fonctions().removeAccents(themeRecherche).trim();
     list = listSource
-        .where((element) => (Fonctions().removeAccents(element.id!.toString()).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.pays_id!.toString()).toLowerCase().contains(themeRecherche) ||
+        .where((element) => (Fonctions()
+                .removeAccents(element.id!.toString())
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.pays_id!.toString())
+                .toLowerCase()
+                .contains(themeRecherche) ||
             Fonctions().removeAccents(element.nom!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.prenom!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.genre!).toLowerCase().contains(themeRecherche) ||
@@ -216,25 +229,45 @@ class _UsersListWidgetState extends State<UsersListWidget> {
             Fonctions().removeAccents(element.quartier!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.ville!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.mail!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.code_whatsapp!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.code_telephone!).toLowerCase().contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.code_whatsapp!)
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.code_telephone!)
+                .toLowerCase()
+                .contains(themeRecherche) ||
             Fonctions().removeAccents(element.whatsapp!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.telephone!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.solde!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.code_secret!).toLowerCase().contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.code_secret!)
+                .toLowerCase()
+                .contains(themeRecherche) ||
             Fonctions().removeAccents(element.ip_adresse!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.statut!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.type_user!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.date_enregistrement!).toLowerCase().contains(themeRecherche)))
+            Fonctions()
+                .removeAccents(element.date_enregistrement!)
+                .toLowerCase()
+                .contains(themeRecherche)))
         .toList();
 
     if (widget.showOnlyValidated == true) {
-      list.removeWhere((element) => element.isNonVerifier);
+      list = list.where((element) => element.isVerifier).toList();
+    }
+
+    if (widget.filterByPays != null) {
+      list = list.where((element) => element.pays_id == widget.filterByPays?.id).toList();
     }
 
     return Scaffold(
-      backgroundColor: widget.backColor ?? (widget.showAsDropDown == true ? Colors.transparent : Colors.white),
-      appBar: widget.showAppBar == true ? Fonctions().defaultAppBar(context: context, titre: "${widget.title != null ? widget.title : ""}") : null,
+      backgroundColor:
+          widget.backColor ?? (widget.showAsDropDown == true ? Colors.transparent : Colors.white),
+      appBar: widget.showAppBar == true
+          ? Fonctions()
+              .defaultAppBar(context: context, titre: "${widget.title != null ? widget.title : ""}")
+          : null,
       body: Container(
         margin: widget.margin,
         padding: widget.padding,
@@ -262,12 +295,15 @@ class _UsersListWidgetState extends State<UsersListWidget> {
                         children: [
                           if (widget.showAsDropDown == true)
                             Row(
-                              children: [const Expanded(child: Text("Aucune donnée trouvée")), dropDownAction(users: selectedUsers)],
+                              children: [
+                                const Expanded(child: Text("Aucune donnée trouvée")),
+                                dropDownAction(users: selectedUsers)
+                              ],
                             ),
                           if (widget.showAsDropDown != true)
                             Expanded(
                               child: NErrorWidget(
-                                message: "Aucune donnée trouvée",
+                                message: widget.customMessage ?? "Aucune donnée trouvée",
                                 buttonText: "Recharger",
                                 onPressed: reloadPage,
                                 isOutline: true,
@@ -307,7 +343,9 @@ class _UsersListWidgetState extends State<UsersListWidget> {
         Expanded(
           child: NTextInputWidget(
             title: widget.title,
-            initialTagSelectedList: widget.initialUsers != null ? widget.initialUsers!.id!.toString().split("~|~").toList() : null,
+            initialTagSelectedList: widget.initialUsers != null
+                ? widget.initialUsers!.id!.toString().split("~|~").toList()
+                : null,
             suggestionsList: list.map((e) => e.id!.toString()).toList(),
             onChanged: (value) {
               if (widget.getSuggestedValue != null) {
@@ -387,7 +425,8 @@ class _UsersListWidgetState extends State<UsersListWidget> {
                     reloadPage: reloadPage,
                     onPressed: widget.onItemPressed != null
                         ? (selectedActualite) {
-                            if (widget.onItemPressed != null) widget.onItemPressed!(selectedActualite);
+                            if (widget.onItemPressed != null)
+                              widget.onItemPressed!(selectedActualite);
                           }
                         : null,
                     optionWidget: dropDownAction(users: actualite),

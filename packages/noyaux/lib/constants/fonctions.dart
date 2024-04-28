@@ -104,14 +104,16 @@ class Fonctions {
     var date1 = inputFormat.parse(date);
 
     var outputFormat = DateFormat("dd/MM/yyyy à HH : mm");
-    String dateSortie = outputFormat.format(date1).replaceAll(" : ", "h").replaceAll("à 00h00", "").trim();
+    String dateSortie =
+        outputFormat.format(date1).replaceAll(" : ", "h").replaceAll("à 00h00", "").trim();
     dateSortie = dateSortie.contains("/0001") ? "" : dateSortie;
     return dateSortie;
   }
 
   Future<bool> joinOnWhatsapp({required String number, String? message = ""}) async {
-    String urlWhatsapp =
-        kIsWeb ? "https://wa.me/" + number.replaceAll('+', "") + "?text=$message" : "whatsapp://send?phone=$number" + "&text=$message";
+    String urlWhatsapp = kIsWeb
+        ? "https://wa.me/" + number.replaceAll('+', "") + "?text=$message"
+        : "whatsapp://send?phone=$number" + "&text=$message";
     if (await canLaunchUrl(Uri.parse(urlWhatsapp))) {
       await launchUrl(Uri.parse(urlWhatsapp));
       return true;
@@ -130,7 +132,8 @@ class Fonctions {
         '${_bitsDigits(16, 4)}${_bitsDigits(16, 4)}${_bitsDigits(16, 4)}';
   }
 
-  String _bitsDigits(int bitCount, int digitCount) => _printDigits(_generateBits(bitCount), digitCount);
+  String _bitsDigits(int bitCount, int digitCount) =>
+      _printDigits(_generateBits(bitCount), digitCount);
 
   int _generateBits(int bitCount) => _random.nextInt(1 << bitCount);
 
@@ -147,7 +150,9 @@ class Fonctions {
 
     final countryIpResponse = await ci.CountryIp.findFromIP(ip["ip"]);
 
-    Pays _selectedPays = await Preferences().getPaysListFromLocal(code: countryIpResponse!.countryCode).then((value) => value.first);
+    Pays _selectedPays = await Preferences()
+        .getPaysListFromLocal(code: countryIpResponse!.countryCode)
+        .then((value) => value.first);
     return _selectedPays;
   }
 
@@ -246,7 +251,9 @@ class Fonctions {
                 ),
             centerTitle: centerTitle,
             elevation: elevation,
-            backgroundColor: Fonctions().isSmallScreen(context) ? backgroundColor ?? Colors.white : backgroundColor ?? Colors.white,
+            backgroundColor: Fonctions().isSmallScreen(context)
+                ? backgroundColor ?? Colors.white
+                : backgroundColor ?? Colors.white,
             //theme.colorScheme.secondary,
             actions: <Widget>[
               if (actionWidget != null) actionWidget,
@@ -294,7 +301,8 @@ class Fonctions {
             ],
             bottom: bottomWidget != null
                 ? PreferredSize(
-                    preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * taillBottom),
+                    preferredSize:
+                        Size.fromHeight(MediaQuery.of(context).size.height * taillBottom),
                     child: bottomWidget,
                   )
                 : null,
@@ -358,12 +366,18 @@ class Fonctions {
   }) async {
     if (pickimage == PICKIMAGE.SINGLEIMAGE) {
       final imagePick = await ImagePicker().pickImage(
-        source: sourcepickimage == SOURCEPICKIMAGE.GALLERY ? ImageSource.gallery : ImageSource.camera,
+        source:
+            sourcepickimage == SOURCEPICKIMAGE.GALLERY ? ImageSource.gallery : ImageSource.camera,
         imageQuality: imageQuality,
       );
       final uint = await imagePick!.readAsBytes();
       final base64 = base64Encode(uint);
-      return {"name": "${imagePick.name}", "path": "${imagePick.path}", "base64": "$base64", "bytes": "$uint"};
+      return {
+        "name": "${imagePick.name}",
+        "path": "${imagePick.path}",
+        "base64": "$base64",
+        "bytes": "$uint"
+      };
     } else {
       throw UnimplementedError(
         "Not implemented",
@@ -400,26 +414,29 @@ class Fonctions {
             children: <Widget>[
               SizedBox(height: 8.0),
               if (showHeader)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    NDisplayTextWidget(
-                      text: title,
-                      theme: BASE_TEXT_THEME.TITLE,
-                      textColor: titleColor,
-                      textAlign: TextAlign.center,
-                    ),
-                    Spacer(),
-                    NButtonWidget(
-                      iconData: Icons.close,
-                      iconColor: constant.Constants.kPrimaryColor,
-                      action: () {
-                        Navigator.pop(context);
-                        if (onCloseDialog != null) onCloseDialog();
-                      },
-                    ),
-                    SizedBox(width: 12.0),
-                  ],
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      NDisplayTextWidget(
+                        text: title,
+                        theme: BASE_TEXT_THEME.TITLE,
+                        textColor: titleColor,
+                        textAlign: TextAlign.center,
+                      ),
+                      Spacer(),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          if (onCloseDialog != null) onCloseDialog();
+                        },
+                        color: Theme.of(context).primaryColor,
+                        icon: Icon(Icons.close),
+                      ),
+                      SizedBox(width: 12.0),
+                    ],
+                  ),
                 ),
               Container(
                 padding: EdgeInsets.all(paddingContent),
@@ -488,7 +505,8 @@ class Fonctions {
           primaryColorLight: Colors.green),
     );
     if (timepick != null) {
-      timeController.text = "${timepick.hour.toString().padLeft(2, '0')} : ${timepick.minute.toString().padLeft(2, '0')}";
+      timeController.text =
+          "${timepick.hour.toString().padLeft(2, '0')} : ${timepick.minute.toString().padLeft(2, '0')}";
       if (onSelectedTime != null) {
         onSelectedTime(timepick);
       }
