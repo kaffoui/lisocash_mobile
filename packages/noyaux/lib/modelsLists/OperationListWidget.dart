@@ -110,9 +110,8 @@ class _OperationListWidgetState extends State<OperationListWidget> {
                 listSource.clear();
                 if (value.isNotEmpty) {
                   listSource.addAll(value
-                      .where((element) =>
-                          DateTime.parse(element.date_enregistrement!).day == DateTime.now().day &&
-                          (element.user_id_from == int.tryParse(widget.user_id!) || element.user_id_to == int.tryParse(widget.user_id!)))
+                      .where(
+                          (element) => (element.user_id_from == int.tryParse(widget.user_id!) || element.user_id_to == int.tryParse(widget.user_id!)))
                       .toList());
                 }
 
@@ -223,8 +222,6 @@ class _OperationListWidgetState extends State<OperationListWidget> {
             Fonctions().removeAccents(element.date_reception!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.date_enregistrement!).toLowerCase().contains(themeRecherche)))
         .toList();
-
-    list.sort((a, b) => b.date_enregistrement!.compareTo(a.date_enregistrement!));
 
     if (widget.showOnlyForToday == true) {
       list = list.where((element) => DateTime.parse(element.date_enregistrement!).day == DateTime.now().day).toList();

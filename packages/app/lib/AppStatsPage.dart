@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:noyaux/constants/fonctions.dart';
 import 'package:noyaux/constants/styles.dart';
 import 'package:noyaux/models/Operation.dart';
+import 'package:noyaux/models/Pays.dart';
 import 'package:noyaux/services/Preferences.dart';
 import 'package:noyaux/widgets/N_ExpandableWidget.dart';
 
@@ -23,6 +24,8 @@ class _AppStatsPageState extends State<AppStatsPage> {
       saturday = "Saturday",
       sunday = "Sunday";
 
+  Pays? paysUsers;
+
   double mn_t = 0, te_t = 0, wd_t = 0, tu_t = 0, fr_t = 0, st_t = 0, sn_t = 0;
   double mn_d = 0, te_d = 0, wd_d = 0, tu_d = 0, fr_d = 0, st_d = 0, sn_d = 0;
   double mn_r = 0, te_r = 0, wd_r = 0, tu_r = 0, fr_r = 0, st_r = 0, sn_r = 0;
@@ -37,6 +40,7 @@ class _AppStatsPageState extends State<AppStatsPage> {
   late ThemeData theme;
 
   void getDataSetNbr() async {
+    paysUsers = await Fonctions().getPaysFromIp();
     await Preferences().getIdUsers().then((id) async {
       await Preferences().getOperationListFromLocal(user_id_from: id).then((value) async {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -210,14 +214,15 @@ class _AppStatsPageState extends State<AppStatsPage> {
               child: _BarChart(mn_r, te_r, wd_r, tu_r, fr_r, st_r, sn_r),
             ),
           ),
-          NExpandableWidget(
-            title: "Rechargement(s) effectué(s)",
-            isExpanded: true,
-            child: AspectRatio(
-              aspectRatio: 1.6,
-              child: _BarChart(mn_re, te_re, wd_re, tu_re, fr_re, st_re, sn_re),
+          if (paysUsers != null && paysUsers?.continent!.toLowerCase() != "africa")
+            NExpandableWidget(
+              title: "Rechargement(s) effectué(s)",
+              isExpanded: true,
+              child: AspectRatio(
+                aspectRatio: 1.6,
+                child: _BarChart(mn_re, te_re, wd_re, tu_re, fr_re, st_re, sn_re),
+              ),
             ),
-          ),
         ],
       ),
     );

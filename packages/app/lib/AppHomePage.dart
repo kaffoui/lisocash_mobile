@@ -40,6 +40,8 @@ class _AppHomePageState extends State<AppHomePage> {
 
   late ThemeData theme;
 
+  bool show_badge = false;
+
   List<DrawerItem> listItems = [];
 
   void setItems() {
@@ -87,6 +89,10 @@ class _AppHomePageState extends State<AppHomePage> {
         ],
       );
     });
+  }
+
+  Future<void> _backgroundHandler(RemoteMessage message) async {
+    print("message: $message");
   }
 
   void sendToken() async {
@@ -181,6 +187,11 @@ class _AppHomePageState extends State<AppHomePage> {
 
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
       print("message initial: $message");
+      if (message != null) {
+        setState(() {
+          show_badge = true;
+        });
+      }
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -196,27 +207,34 @@ class _AppHomePageState extends State<AppHomePage> {
               channel.id,
               channel.name,
               channelDescription: channel.description,
-              icon: 'launch_background',
+              icon: '@mipmap/launcher_icon',
             ),
           ),
         );
+        if (currentIndex != 2) {
+          setState(() {
+            show_badge = true;
+          });
+        }
       }
 
+      FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
+
       if (message.data.isNotEmpty) {
-        if (message.data["page"] == "confirme-course") {
-        } else if (message.data["page"] == "notification") {
-        } else if (message.data["page"] == "mes_courses") {
-        } else if (message.data["click_action"] != "") {}
+        if (currentIndex != 2) {
+          setState(() {
+            show_badge = true;
+          });
+        }
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.data.isNotEmpty) {
-        if (message.data["page"] == "confirme-course") {
-        } else if (message.data["page"] == "notification") {
-        } else if (message.data["page"] == "mes_courses") {
-        } else if (message.data["click_action"] != "") {
-          Fonctions().openUrl("${message.data["click_action"]}");
+        if (currentIndex != 2) {
+          setState(() {
+            show_badge = true;
+          });
         }
       }
     });
@@ -286,6 +304,11 @@ class _AppHomePageState extends State<AppHomePage> {
                 onTap: () {
                   setState(() {
                     currentIndex = index;
+                    if (index == 2) {
+                      setState(() {
+                        show_badge = false;
+                      });
+                    }
                     HapticFeedback.lightImpact();
                   });
                 },
@@ -344,10 +367,13 @@ class _AppHomePageState extends State<AppHomePage> {
                                 curve: Curves.fastLinearToSlowEaseIn,
                                 width: index == currentIndex ? size.width * .02 : 20,
                               ),
-                              Icon(
-                                listItems[index].iconData,
-                                size: 16,
-                                color: index == currentIndex ? theme.colorScheme.secondary : Colors.black26,
+                              Badge(
+                                isLabelVisible: index == 2 && show_badge,
+                                child: Icon(
+                                  listItems[index].iconData,
+                                  size: 16,
+                                  color: index == currentIndex ? theme.colorScheme.secondary : Colors.black26,
+                                ),
                               ),
                             ],
                           ),

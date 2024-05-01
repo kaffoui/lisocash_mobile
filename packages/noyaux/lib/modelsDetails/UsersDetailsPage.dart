@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:app/AppErrorCritiquePage.dart';
 import 'package:flutter/material.dart';
 import 'package:noyaux/pages/components/MyBodyPage.dart';
 import 'package:noyaux/services/api/Api.dart';
@@ -269,7 +270,6 @@ class _UsersDetailsPageState extends State<UsersDetailsPage> {
                                           width: double.infinity,
                                           imageQuality: 20,
                                           isOtherImage: true,
-                                          isEditable: !userconnected!.isAdresseValidated,
                                           backgroundColor: Colors.grey.shade50,
                                           backgroundRadius: 0.0,
                                           showButtonToSend: true,
@@ -352,7 +352,6 @@ class _UsersDetailsPageState extends State<UsersDetailsPage> {
                                           width: double.infinity,
                                           imageQuality: 20,
                                           isOtherImage: true,
-                                          isEditable: !userconnected!.isAdresseValidated,
                                           backgroundColor: Colors.grey.shade50,
                                           backgroundRadius: 0.0,
                                           showButtonToSend: true,
@@ -466,6 +465,22 @@ class _UsersDetailsPageState extends State<UsersDetailsPage> {
                                 },
                               ),
                             )
+                          ],
+                        ),
+                      if (!getuserconnected && (userconnected != null && userconnected!.isUser) && userconnected!.isNonVerifier)
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: NButtonWidget(
+                                text: "Modifier les preuves",
+                                action: () {
+                                  Fonctions().openPageToGo(
+                                    context: context,
+                                    pageToGo: AppErrorCritiquePage(users: userconnected),
+                                  );
+                                },
+                              ),
+                            ),
                           ],
                         )
                     ],

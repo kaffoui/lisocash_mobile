@@ -1,4 +1,5 @@
 import 'package:app/AppHomePage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:noyaux/constants/constants.dart';
@@ -63,15 +64,336 @@ class _VueOperationState extends State<VueOperation> {
       child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
-            if (widget.onPressed != null) {
-              widget.onPressed!(widget.operation);
+            if (kIsWeb) {
+              if (widget.onPressed != null) {
+                widget.onPressed!(widget.operation);
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OperationDetailsPage(
+                      operation: widget.operation!,
+                      reloadParentList: widget.reloadPage,
+                    ),
+                  ),
+                );
+              }
             } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OperationDetailsPage(
-                    operation: widget.operation!,
-                    reloadParentList: widget.reloadPage,
+              Fonctions().showWidgetAsModalSheet(
+                context: context,
+                maxHeight: 520,
+                useConstraint: true,
+                useSafeArea: true,
+                title: "Détails de la transaction",
+                trailing: Row(
+                  children: [
+                    SizedBox(width: 5.0),
+                    CircleAvatar(
+                      backgroundColor: widget.operation!.isTransfert
+                          ? Colors.green
+                          : widget.operation!.isRechargement || widget.operation!.isDepot
+                              ? theme.colorScheme.secondary
+                              : theme.colorScheme.primary,
+                      child: Icon(
+                        widget.operation!.isTransfert
+                            ? MdiIcons.transferUp
+                            : widget.operation!.isRechargement || widget.operation!.isDepot
+                                ? MdiIcons.transferDown
+                                : Icons.info_sharp,
+                        color: Colors.white,
+                        size: 6.0,
+                      ),
+                      radius: 6.0,
+                    ),
+                  ],
+                ),
+                widget: NCardWidget(
+                  elevation: .2,
+                  margin: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      SizedBox(height: 10.0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Type operationn".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.type_operation}".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Statut".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.etat_operation}".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Montant envoyer".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.montant!.split("~")[0]} ${widget.operation?.user_from?.pays?.symbole_monnaie}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Montant recu".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.montant!.split("~")[1]} ${widget.operation?.user_to?.pays?.symbole_monnaie}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Frais appliqué".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.frais?.frais_pourcentage} %",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Motif".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.motif}".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Expéditeur".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.user_from?.nom} ${widget.operation?.user_from?.prenom}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Bénéficiaire".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.user_to?.nom} ${widget.operation?.user_to?.prenom}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Date de transaction".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${Fonctions().displayDate(widget.operation!.date_enregistrement!)}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10.0),
+                    ],
                   ),
                 ),
               );
@@ -199,13 +521,13 @@ class _VueOperationState extends State<VueOperation> {
                                 CircleAvatar(
                                   backgroundColor: widget.operation!.isTransfert
                                       ? Colors.green
-                                      : widget.operation!.isRechargement
+                                      : widget.operation!.isRechargement || widget.operation!.isDepot
                                           ? theme.colorScheme.secondary
                                           : theme.colorScheme.primary,
                                   child: Icon(
                                     widget.operation!.isTransfert
                                         ? MdiIcons.transferUp
-                                        : widget.operation!.isRechargement
+                                        : widget.operation!.isRechargement || widget.operation!.isDepot
                                             ? MdiIcons.transferDown
                                             : Icons.info_sharp,
                                     color: Colors.white,
@@ -221,26 +543,33 @@ class _VueOperationState extends State<VueOperation> {
                                           (usersConnected != null && widget.operation!.user_id_from == usersConnected!.id && usersConnected!.isUser))
                                         NDisplayTextWidget(
                                           text:
-                                              "Envoie de ${widget.operation!.montant} ${widget.operation!.user_from!.pays!.symbole_monnaie} à ${widget.operation!.user_to!.nom} ${widget.operation!.user_to!.prenom}",
+                                              "Envoie de ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie} à ${widget.operation!.user_to!.nom} ${widget.operation!.user_to!.prenom}",
                                           theme: BASE_TEXT_THEME.BODY_SMALL,
                                         ),
                                       if (widget.operation!.isTransfert &&
                                           (usersConnected != null && widget.operation!.user_id_to == usersConnected!.id && usersConnected!.isUser))
                                         NDisplayTextWidget(
                                           text:
-                                              "Vous venez de recevoir un montant de ${widget.operation!.montant} ${widget.operation!.user_from!.pays!.symbole_monnaie} de la part de ${widget.operation!.user_from!.nom} ${widget.operation!.user_from!.prenom}",
+                                              "Vous venez de recevoir un montant de ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie} de la part de ${widget.operation!.user_from!.nom} ${widget.operation!.user_from!.prenom}",
                                           theme: BASE_TEXT_THEME.BODY_SMALL,
                                         ),
                                       if (widget.operation!.isRechargement)
                                         NDisplayTextWidget(
-                                          text: "Rechargement de ${widget.operation!.montant} ${widget.operation!.user_from!.pays!.symbole_monnaie}",
+                                          text:
+                                              "Rechargement de ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie}",
+                                          theme: BASE_TEXT_THEME.BODY_SMALL,
+                                        ),
+                                      if (widget.operation!.isDepot)
+                                        NDisplayTextWidget(
+                                          text:
+                                              "Envoie de ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie} par Lisocash",
                                           theme: BASE_TEXT_THEME.BODY_SMALL,
                                         ),
                                       if (widget.operation!.isRetrait &&
                                           widget.operation!.etat_operation!.toLowerCase() == ETAT_OPERATION.TERMINER.name.toLowerCase())
                                         NDisplayTextWidget(
                                           text:
-                                              "Vous venez de retirer un montant ${widget.operation!.montant} ${widget.operation!.user_from!.pays!.symbole_monnaie}",
+                                              "Vous venez de retirer un montant ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie}",
                                           theme: BASE_TEXT_THEME.BODY_SMALL,
                                         ),
                                       if (widget.operation!.isRetrait &&
@@ -250,7 +579,7 @@ class _VueOperationState extends State<VueOperation> {
                                             Expanded(
                                               child: NDisplayTextWidget(
                                                 text:
-                                                    "Un retrait viens d'être lancer d'un montant de ${widget.operation!.montant} ${widget.operation!.user_from!.pays!.symbole_monnaie}",
+                                                    "Un retrait viens d'être lancer d'un montant de ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie}",
                                                 theme: BASE_TEXT_THEME.BODY_SMALL,
                                               ),
                                             ),

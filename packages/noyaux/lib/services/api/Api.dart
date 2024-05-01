@@ -33,23 +33,16 @@ class Api {
     try {
       dataToSend.updateAll((key, value) => value);
 
-      dataToSend.updateAll(
-          (key, value) => value == null ? "" : value.toString().trim());
-      dataToSend.updateAll(
-          (key, value) => value is Map<String, dynamic> ? "" : value);
+      dataToSend.updateAll((key, value) => value == null ? "" : value.toString().trim());
+      dataToSend.updateAll((key, value) => value is Map<String, dynamic> ? "" : value);
       print("dataToSend: $dataToSend");
 
       http.Response response = await http.post(uri, body: dataToSend);
-      print(
-          "url: $uri\ncode: ${response.statusCode}\nresponse: ${response.body}");
+      print("url: $uri\ncode: ${response.statusCode}\nresponse: ${response.body}");
       if (response.statusCode == 200) {
         Map<String, dynamic> body = json.decode(response.body);
         if (body["code"] == "100") {
-          return {
-            "saved": true,
-            "inserted_id": body["inserted_id"],
-            "message_error": null
-          };
+          return {"saved": true, "inserted_id": body["inserted_id"], "message_error": null};
         } else if (body["code"] == "101") {
           return {"saved": false, "message_error": body["message"]};
         } else {
@@ -59,10 +52,7 @@ class Api {
         return {"saved": false, "message_error": "Une erreur s'est produite"};
       }
     } on SocketException {
-      return {
-        "saved": false,
-        "message_error": "Veuillez vous connectez à internet"
-      };
+      return {"saved": false, "message_error": "Veuillez vous connectez à internet"};
     } catch (e) {
       return {"saved": false, "message_error": "$e"};
     }
@@ -78,10 +68,8 @@ class Api {
       http.Response response = await http.get(url);
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['code'] == "100") {
-        await Preferences.saveData(
-            key: '${Preferences.PREFS_KEY_Configuration}$id', data: json);
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Configuration}$id', data: json);
         return true;
       } else {
         return false;
@@ -103,11 +91,8 @@ class Api {
       http.Response response = await http.get(url);
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
-      print("url: $url");
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['code'] == "100") {
-        await Preferences.saveData(
-            key: '${Preferences.PREFS_KEY_Frais}$id', data: json);
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Frais}$id', data: json);
         return true;
       } else {
         return false;
@@ -119,8 +104,7 @@ class Api {
     }
   }
 
-  Future getOperation(
-      {String? id, String? user_id_from, String? user_id_to}) async {
+  Future getOperation({String? id, String? user_id_from, String? user_id_to}) async {
     Map<String, String> params = {
       "id": id != null ? "$id" : "",
       "user_id_from": user_id_from != null ? "$user_id_from" : "",
@@ -132,13 +116,9 @@ class Api {
       http.Response response = await http.get(url);
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
-      print("url: $url");
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['code'] == "100") {
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
         await Preferences.saveData(
-            key:
-                '${Preferences.PREFS_KEY_Operation}$id$user_id_from$user_id_to',
-            data: json);
+            key: '${Preferences.PREFS_KEY_Operation}$id$user_id_from$user_id_to', data: json);
         return true;
       } else {
         return false;
@@ -161,11 +141,8 @@ class Api {
       http.Response response = await http.get(url);
       print("url: $url\nbody: ${response.body}");
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
-      // print("url: $url\ncode: ${response.statusCode}\ndata: ${response.body}");
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['code'] == "100") {
-        await Preferences.saveData(
-            key: '${Preferences.PREFS_KEY_Pays}$id$code', data: json);
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Pays}$id$code', data: json);
         return true;
       } else {
         return false;
@@ -186,14 +163,11 @@ class Api {
 
     try {
       http.Response response = await http.get(url);
-      print("url: $url\nbody: ${response.body}");
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
 
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['code'] == "100") {
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
         await Preferences.saveData(
-            key: '${Preferences.PREFS_KEY_Notifications}$id$user_id',
-            data: json);
+            key: '${Preferences.PREFS_KEY_Notifications}$id$user_id', data: json);
         return true;
       } else {
         return false;
@@ -215,10 +189,8 @@ class Api {
       http.Response response = await http.get(url);
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['code'] == "100") {
-        await Preferences.saveData(
-            key: '${Preferences.PREFS_KEY_Taux}$id', data: json);
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Taux}$id', data: json);
         return true;
       } else {
         return false;
@@ -242,8 +214,7 @@ class Api {
       http.Response response = await http.get(url);
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['code'] == "100") {
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
         await Preferences.saveData(
             key: '${Preferences.PREFS_KEY_Users}$id$mail$password', data: json);
         return true;
@@ -267,8 +238,7 @@ class Api {
       http.Response response = await http.post(url, body: params);
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
-      if (response.statusCode == 200 &&
-          jsonDecode(response.body)['code'] == "100") {
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
         return {"send": true};
       } else {
         return {"send": false};
@@ -281,17 +251,15 @@ class Api {
   }
 
   Future<List<Currency>> fetchCurrency(String? value) async {
-    final response = await http.get(Uri.parse(
-        'https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=${value}'));
+    final response = await http.get(
+        Uri.parse('https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=${value}'));
     var data = jsonDecode(response.body);
 
-    print("response curr: ${response.body}");
     if (response.statusCode == 200) {
       List<Currency> currencies = [];
       for (var code in data["data"].keys) {
         Currency currency = Currency(
-            code: data["data"][code]["code"],
-            value: data["data"][code]["value"].toDouble());
+            code: data["data"][code]["code"], value: data["data"][code]["value"].toDouble());
         currencies.add(currency);
       }
       return currencies;
@@ -300,12 +268,10 @@ class Api {
     }
   }
 
-  Future<Currency> fetchExchangeRate(
-      String? baseValue, String? targetValue) async {
+  Future<Currency> fetchExchangeRate(String? baseValue, String? targetValue) async {
     final response = await http.get(Uri.parse(
         'https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=${baseValue}&currencies=${targetValue}'));
     var data = jsonDecode(response.body);
-    print("response rate: ${response.body}");
     if (response.statusCode == 200) {
       Currency currency = Currency(
         code: data["data"][targetValue]["code"],

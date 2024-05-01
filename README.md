@@ -1,4 +1,4 @@
-# lisocash
+# Lisocash
 
 A new Flutter project.
 

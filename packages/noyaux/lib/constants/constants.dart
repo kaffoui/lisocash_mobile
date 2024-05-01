@@ -27,6 +27,11 @@ class Constants {
   static const double taille = 16.0;
 }
 
+extension StringCasingExtension on String {
+  String toCapitalizedCase() => length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalizedCase()).join(' ');
+}
+
 enum TYPE_USER { USER, ADMIN, SUPER_ADMIN, AGENT, DISTRIBUTEUR }
 
 enum STATUT_USER { IS_VERIFIER, IS_BLACKLISTED, IS_REDLISTED, IS_NON_VERIFIER }

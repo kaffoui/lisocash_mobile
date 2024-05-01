@@ -101,36 +101,39 @@ class _OperationDetailsPageState extends State<OperationDetailsPage> {
           : null,
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              NButtonWidget(
-                text: "Modifier",
-                backColor: Colors.green,
-                isOutline: true,
-                margin: EdgeInsets.all(12),
-                rounded: true,
-                action: () {
-                  /*Fonctions().showWidgetAsDialog(
-                      context: context,
-                      title: "Modification Operation",
-                      widget: Formulaire(contextFormulaire: context, successCallBack: editCallBack)
-                          .saveOperationForm(objectOperation: widget.operation));*/
-                },
-              ),
-              NButtonWidget(
-                text: "Supprimer",
-                backColor: Colors.red,
-                margin: EdgeInsets.all(12),
-                rounded: true,
-                action: () {
-                  /*Formulaire(contextFormulaire: context, successCallBack: deleteCallBack).dialogForDeleteObject(
-                    objectToDelete: widget.operation,
-                    url: Url.operationDeleteUrl,
-                  );*/
-                },
-              ),
-            ],
+          Visibility(
+            visible: false,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                NButtonWidget(
+                  text: "Modifier",
+                  backColor: Colors.green,
+                  isOutline: true,
+                  margin: EdgeInsets.all(12),
+                  rounded: true,
+                  action: () {
+                    /*Fonctions().showWidgetAsDialog(
+                        context: context,
+                        title: "Modification Operation",
+                        widget: Formulaire(contextFormulaire: context, successCallBack: editCallBack)
+                            .saveOperationForm(objectOperation: widget.operation));*/
+                  },
+                ),
+                NButtonWidget(
+                  text: "Supprimer",
+                  backColor: Colors.red,
+                  margin: EdgeInsets.all(12),
+                  rounded: true,
+                  action: () {
+                    /*Formulaire(contextFormulaire: context, successCallBack: deleteCallBack).dialogForDeleteObject(
+                      objectToDelete: widget.operation,
+                      url: Url.operationDeleteUrl,
+                    );*/
+                  },
+                ),
+              ],
+            ),
           ),
           if (isLoading) Expanded(child: Center(child: NLoadingWidget())),
           if (!isLoading && widget.operation == Operation())
@@ -148,8 +151,7 @@ class _OperationDetailsPageState extends State<OperationDetailsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                        padding: EdgeInsets.all(8), child: NDisplayTextWidget(text: "id : ${widget.operation.id}")),
+                    Container(padding: EdgeInsets.all(8), child: NDisplayTextWidget(text: "id : ${widget.operation.id}")),
                   ],
                 ),
               ),

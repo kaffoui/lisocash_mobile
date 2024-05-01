@@ -38,6 +38,12 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
         final users = data.first;
         users.ip_adresse = ip["ip"];
 
+        /*final pays = await Fonctions().getPaysFromIp();
+
+        final currency = await Api().fetchExchangeRate(users.pays?.symbole_monnaie, pays.symbole_monnaie);
+
+        users.solde = "${double.tryParse("${int.parse(users.solde!) * currency.value!}")!.toStringAsFixed(0)}";*/
+
         Map<String, String> paramsSup = {
           "action": "SAVE",
         };
@@ -51,7 +57,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                 context: context,
                 pageToGo: (users.isAdmin || users.isSuperAdmin) && kIsWeb
                     ? DashboardHomePage()
-                    : users.isVerifier
+                    : users.isVerifier || users.lien_adresse!.isNotEmpty || users.lien_cni!.isNotEmpty
                         ? AppHomePage(users: users)
                         : AppErrorCritiquePage(users: users),
                 replacePage: true,

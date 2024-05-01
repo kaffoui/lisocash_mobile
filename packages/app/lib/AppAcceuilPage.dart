@@ -10,8 +10,11 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:noyaux/constants/constants.dart' as cn;
 import 'package:noyaux/constants/fonctions.dart';
 import 'package:noyaux/constants/styles.dart';
+import 'package:noyaux/models/Currency.dart';
+import 'package:noyaux/models/Frais.dart';
 import 'package:noyaux/models/Notifications.dart';
 import 'package:noyaux/models/Operation.dart';
+import 'package:noyaux/models/Pays.dart';
 import 'package:noyaux/models/Users.dart';
 import 'package:noyaux/modelsLists/OperationListWidget.dart';
 import 'package:noyaux/modelsVues/OperationVue.dart';
@@ -26,11 +29,6 @@ import 'package:noyaux/widgets/N_TextInputWidget.dart';
 import 'package:noyaux/widgets/N_ToastWidget.dart';
 
 import 'AppErrorCritiquePage.dart';
-
-extension StringCasingExtension on String {
-  String toCapitalizedCase() => length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalizedCase()).join(' ');
-}
 
 class AppAcceuilPage extends StatefulWidget {
   const AppAcceuilPage({super.key});
@@ -48,6 +46,12 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
 
   bool sendPayment = false;
 
+  Pays? pays_now;
+
+  List<Frais> list_frais = [];
+
+  Currency? currency;
+
   List<Operation> listOperations = [];
 
   Users? users;
@@ -56,10 +60,15 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
     setState(() {
       getDataUsers = true;
     });
+    pays_now = await Fonctions().getPaysFromIp();
+
     String id = await Preferences().getIdUsers();
 
     if (id.isNotEmpty) {
       users = await Preferences().getUsersListFromLocal(id: id).then((value) => value.first);
+
+      currency = await Api().fetchExchangeRate(users?.pays?.symbole_monnaie, pays_now?.symbole_monnaie);
+
       getTransactions();
       setState(() {});
     }
@@ -93,10 +102,16 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
     });
   }
 
+  void getFrais() async {
+    list_frais = await Preferences().getFraisListFromLocal();
+    setState(() {});
+  }
+
   @override
   void initState() {
     getUsers();
     super.initState();
+    getFrais();
   }
 
   @override
@@ -201,6 +216,45 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                               context: context,
                                               pageToGo: AppSendMoney(),
                                             );
+                                          } else if (users != null &&
+                                              users!.isNonVerifier &&
+                                              (users!.lien_adresse!.isNotEmpty || users!.lien_cni!.isNotEmpty)) {
+                                            Fonctions().showWidgetAsDialog(
+                                              context: context,
+                                              titleWidget: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    child: Text(
+                                                      "Avertissement",
+                                                      style: Style.defaultTextStyle(textSize: 12.0, textColor: Colors.red),
+                                                    ),
+                                                  ),
+                                                  IconButton(
+                                                    icon: Icon(
+                                                      Icons.close,
+                                                      color: Colors.red,
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                              widget: Container(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        "Vos informations sont en cours de traitement. Veuillez réessayer plus tard",
+                                                        style: Style.defaultTextStyle(textSize: 10.0, textOverflow: null),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
                                           } else {
                                             Fonctions().openPageToGo(
                                               context: context,
@@ -230,6 +284,23 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
 
                                           final pays = await Fonctions().getPaysFromIp();
 
+                                          List<Frais> _list_frais = [];
+                                          Frais? selectedFrais;
+
+                                          if (list_frais.isNotEmpty) {
+                                            setState(() {
+                                              _list_frais = list_frais
+                                                  .where((element) =>
+                                                      element.operation_type!.toLowerCase() == "depot" &&
+                                                      element.moyen_paiement!.toLowerCase() == "stripe")
+                                                  .toList();
+                                            });
+                                          }
+                                          print("list: $_list_frais");
+                                          if (_list_frais.isNotEmpty) {
+                                            selectedFrais = _list_frais.first;
+                                          }
+
                                           if (pays.continent != "Africa") {
                                             Fonctions().showWidgetAsDialog(
                                               context: context,
@@ -254,98 +325,120 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                   ),
                                                 ],
                                               ),
-                                              widget: Container(
-                                                width: 720,
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      padding: EdgeInsets.symmetric(horizontal: 12.0),
-                                                      child: Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                              "Votre montant doit être supérieur ou égale 5000 ${pays.symbole_monnaie}.",
-                                                              maxLines: 1,
-                                                              style: Style.defaultTextStyle(
-                                                                textSize: 11.0,
-                                                                textOverflow: null,
+                                              widget: StatefulBuilder(builder: (context, setState) {
+                                                return Container(
+                                                  width: 720,
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: Text(
+                                                                "Votre montant doit être supérieur ou égale 5000 ${pays.symbole_monnaie}.",
+                                                                maxLines: 1,
+                                                                style: Style.defaultTextStyle(
+                                                                  textSize: 11.0,
+                                                                  textOverflow: null,
+                                                                ),
                                                               ),
                                                             ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                    NTextInputWidget(
-                                                      hint: "Montant",
-                                                      validationKey: montantKey,
-                                                      onChanged: (value) {
-                                                        montant = value;
-                                                      },
-                                                      onValidated: (value) {
-                                                        if (value.isNotEmpty && int.parse(value) > 0) {
-                                                          if (int.parse(value) < 5000) {
-                                                            return "Le montant de rechargement doit être supérieur ou égale 5000";
+                                                      NTextInputWidget(
+                                                        hint: "Montant",
+                                                        validationKey: montantKey,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            montant = value;
+                                                          });
+                                                        },
+                                                        onValidated: (value) {
+                                                          if (value.isNotEmpty && int.parse(value) > 0) {
+                                                            if (int.parse(value) < 5000) {
+                                                              return "Le montant de rechargement doit être supérieur ou égale 5000";
+                                                            }
                                                           }
-                                                        }
-                                                        return null;
-                                                      },
-                                                    ),
-                                                    NButtonWidget(
-                                                      text: "Valider",
-                                                      action: () async {
-                                                        if (montantKey.currentState!.validate()) {
-                                                          Navigator.pop(context);
-
-                                                          try {
-                                                            Map<String, dynamic> body = {
-                                                              "amount": montant,
-                                                              "currency": pays.symbole_monnaie,
-                                                            };
-
-                                                            final response = await http.post(
-                                                              Uri.parse("https://api.stripe.com/v1/payment_intents"),
-                                                              headers: {
-                                                                'Authorization': 'Bearer ${cn.Constants.STRIPE_DEV_SECRET}',
-                                                                'Content-type': 'application/x-www-form-urlencoded'
-                                                              },
-                                                              body: body,
-                                                            );
-                                                            paymentIntent = jsonDecode(response.body);
-                                                          } catch (e) {
-                                                            ScaffoldMessenger.of(context).clearSnackBars();
-                                                            NToastWidget().showToastStyle(
-                                                              context,
-                                                              message: "Une erreur s'est produite..",
-                                                              alerteetat: ALERTEETAT.ERREUR,
-                                                            );
-                                                          }
-                                                          if (paymentIntent != null && paymentIntent!.isNotEmpty) {
-                                                            try {
-                                                              await Stripe.instance.initPaymentSheet(
-                                                                paymentSheetParameters: SetupPaymentSheetParameters(
-                                                                  paymentIntentClientSecret: paymentIntent!["client_secret"],
-                                                                  style: ThemeMode.system,
-                                                                  billingDetails: BillingDetails(
-                                                                    email: users!.mail,
-                                                                    name: "${users!.nom} ${users!.prenom}",
-                                                                    phone: "${users!.code_telephone} ${users!.telephone}",
-                                                                    address: Address(
-                                                                      city: "",
-                                                                      country: pays.nom,
-                                                                      line1: "",
-                                                                      line2: "",
-                                                                      postalCode: "",
-                                                                      state: pays.region,
+                                                          return null;
+                                                        },
+                                                        rightWidget: Text("${pays.symbole_monnaie}"),
+                                                      ),
+                                                      if (selectedFrais != null)
+                                                        Container(
+                                                          padding: EdgeInsets.all(8.0),
+                                                          child: Column(
+                                                            children: [
+                                                              Row(
+                                                                children: <Widget>[
+                                                                  Expanded(
+                                                                    child: RichText(
+                                                                      text: TextSpan(
+                                                                        text: "Des frais ",
+                                                                        style: Style.defaultTextStyle(textSize: 10.0),
+                                                                        children: [
+                                                                          TextSpan(
+                                                                            text: "${selectedFrais.frais_pourcentage} % ",
+                                                                            style:
+                                                                                Style.defaultTextStyle(textSize: 10.0, textWeight: FontWeight.w700),
+                                                                          ),
+                                                                          TextSpan(
+                                                                            text: "seront appliqués lors de la transaction.",
+                                                                            style: Style.defaultTextStyle(textSize: 10.0),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      textAlign: TextAlign.center,
+                                                                      softWrap: true,
                                                                     ),
                                                                   ),
-                                                                  billingDetailsCollectionConfiguration: BillingDetailsCollectionConfiguration(
-                                                                    address: AddressCollectionMode.never,
+                                                                ],
+                                                              ),
+                                                              if (montant.isNotEmpty)
+                                                                Container(
+                                                                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                                                  child: Row(
+                                                                    children: <Widget>[
+                                                                      Expanded(
+                                                                        child: Text(
+                                                                          "Total : ${(int.parse(montant)! * double.tryParse(selectedFrais.frais_pourcentage!)!).toStringAsFixed(0)} (${pays.symbole_monnaie})",
+                                                                          textAlign: TextAlign.end,
+                                                                          style: Style.defaultTextStyle(textSize: 10.0),
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                  merchantDisplayName: "LISOCASH",
                                                                 ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      NButtonWidget(
+                                                        text: "Valider",
+                                                        action: () async {
+                                                          if (montantKey.currentState!.validate()) {
+                                                            Navigator.pop(context);
+
+                                                            final nouveauMontant =
+                                                                (int.parse(montant) * double.tryParse(selectedFrais!.frais_pourcentage!)!)
+                                                                    .toStringAsFixed(0);
+
+                                                            try {
+                                                              Map<String, dynamic> body = {
+                                                                "amount": nouveauMontant,
+                                                                "currency": pays.symbole_monnaie,
+                                                              };
+
+                                                              final response = await http.post(
+                                                                Uri.parse("https://api.stripe.com/v1/payment_intents"),
+                                                                headers: {
+                                                                  'Authorization': 'Bearer ${cn.Constants.STRIPE_DEV_SECRET}',
+                                                                  'Content-type': 'application/x-www-form-urlencoded'
+                                                                },
+                                                                body: body,
                                                               );
+                                                              paymentIntent = jsonDecode(response.body);
                                                             } catch (e) {
-                                                              print("erreur: $e");
                                                               ScaffoldMessenger.of(context).clearSnackBars();
                                                               NToastWidget().showToastStyle(
                                                                 context,
@@ -353,90 +446,127 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                                 alerteetat: ALERTEETAT.ERREUR,
                                                               );
                                                             }
-                                                          }
+                                                            if (paymentIntent != null && paymentIntent!.isNotEmpty) {
+                                                              try {
+                                                                await Stripe.instance.initPaymentSheet(
+                                                                  paymentSheetParameters: SetupPaymentSheetParameters(
+                                                                    paymentIntentClientSecret: paymentIntent!["client_secret"],
+                                                                    style: ThemeMode.system,
+                                                                    billingDetails: BillingDetails(
+                                                                      email: users!.mail,
+                                                                      name: "${users!.nom} ${users!.prenom}",
+                                                                      phone: "${users!.code_telephone} ${users!.telephone}",
+                                                                      address: Address(
+                                                                        city: "",
+                                                                        country: pays.nom,
+                                                                        line1: "",
+                                                                        line2: "",
+                                                                        postalCode: "",
+                                                                        state: pays.region,
+                                                                      ),
+                                                                    ),
+                                                                    billingDetailsCollectionConfiguration: BillingDetailsCollectionConfiguration(
+                                                                      address: AddressCollectionMode.never,
+                                                                    ),
+                                                                    merchantDisplayName: "LISOCASH",
+                                                                  ),
+                                                                );
+                                                              } catch (e) {
+                                                                print("erreur: $e");
+                                                                ScaffoldMessenger.of(context).clearSnackBars();
+                                                                NToastWidget().showToastStyle(
+                                                                  context,
+                                                                  message: "Une erreur s'est produite..",
+                                                                  alerteetat: ALERTEETAT.ERREUR,
+                                                                );
+                                                              }
+                                                            }
 
-                                                          try {
-                                                            await Stripe.instance.presentPaymentSheet().then((value) async {
-                                                              ScaffoldMessenger.of(context).clearSnackBars();
-                                                              NToastWidget().showToastStyle(
-                                                                context,
-                                                                message: "Paiement effectué avec succès",
-                                                                alerteetat: ALERTEETAT.SUCCES,
-                                                              );
-                                                              final user = users;
-                                                              final operation = Operation(
-                                                                type_operation: cn.TYPE_OPERATION.RECHARGEMENT.name.toLowerCase(),
-                                                                date_enregistrement: DateTime.now().toString(),
-                                                                date_envoie: DateTime.now().toString(),
-                                                                etat_operation: cn.ETAT_OPERATION.TERMINER.name.toLowerCase(),
-                                                                montant: montant,
-                                                                frais_id: 0,
-                                                                motif: "Rechargement de compte",
-                                                                taux_id: 0,
-                                                                user_id_from: user!.id,
-                                                                user_id_to: 0,
-                                                                date_reception: DateTime.now().toString(),
-                                                                id: 0,
-                                                              );
-
-                                                              await Api.saveObjetApi(
-                                                                arguments: operation,
-                                                                url: Url.OperationUrl,
-                                                                additionalArgument: {"action": "SAVE"},
-                                                              ).then((value) async {
-                                                                if (value["saved"] == true) {
-                                                                  final _solde = int.parse(users!.solde!);
-                                                                  final _montant = int.parse(montant);
-                                                                  user.solde = '${_solde + _montant}';
+                                                            WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+                                                              try {
+                                                                await Stripe.instance.presentPaymentSheet().then((value) async {
+                                                                  final user = users;
+                                                                  final operation = Operation(
+                                                                    type_operation: cn.TYPE_OPERATION.DEPOT.name.toLowerCase(),
+                                                                    date_enregistrement: DateTime.now().toString(),
+                                                                    date_envoie: DateTime.now().toString(),
+                                                                    etat_operation: cn.ETAT_OPERATION.TERMINER.name.toLowerCase(),
+                                                                    montant: "$nouveauMontant~$montant",
+                                                                    frais_id: selectedFrais!.id,
+                                                                    motif: "Dépôt sur mon compte",
+                                                                    taux_id: 0,
+                                                                    user_id_from: user!.id,
+                                                                    user_id_to: 1,
+                                                                    date_reception: DateTime.now().toString(),
+                                                                    id: 0,
+                                                                  );
 
                                                                   await Api.saveObjetApi(
-                                                                    arguments: user,
-                                                                    url: Url.UsersUrl,
+                                                                    arguments: operation,
+                                                                    url: Url.OperationUrl,
                                                                     additionalArgument: {"action": "SAVE"},
                                                                   ).then((value) async {
-                                                                    setState(() {
-                                                                      sendPayment = false;
-                                                                    });
-                                                                    final notif = Notifications(
-                                                                      titre: "Rechargement de compte",
-                                                                      message:
-                                                                          "Vous venez de recharger votre compte de ${_montant} ${user.pays!.symbole_monnaie}",
-                                                                      user_id: user.id,
-                                                                      type_notification: "welcome",
-                                                                      priorite: "normal",
-                                                                    );
+                                                                    if (value["saved"] == true) {
+                                                                      final _solde = int.parse(users!.solde!);
+                                                                      final _montant = int.parse(montant);
+                                                                      user.solde = '${_solde + _montant}';
 
-                                                                    await Api.saveObjetApi(
-                                                                      arguments: notif,
-                                                                      additionalArgument: {
-                                                                        'action': 'SAVE',
-                                                                        'send_notif': '1',
-                                                                        'fcm_token': '${user.fcm_token}',
-                                                                      },
-                                                                      url: Url.NotificationsUrl,
-                                                                    );
-                                                                    getUsers();
+                                                                      await Api.saveObjetApi(
+                                                                        arguments: user,
+                                                                        url: Url.UsersUrl,
+                                                                        additionalArgument: {"action": "SAVE"},
+                                                                      ).then((value) async {
+                                                                        setState(() {
+                                                                          sendPayment = false;
+                                                                        });
+                                                                        ScaffoldMessenger.of(context).clearSnackBars();
+                                                                        NToastWidget().showToastStyle(
+                                                                          context,
+                                                                          message: "Paiement effectué avec succès",
+                                                                          alerteetat: ALERTEETAT.SUCCES,
+                                                                        );
+                                                                        final notif = Notifications(
+                                                                          titre: "Rechargement de compte",
+                                                                          message:
+                                                                              "Vous venez de recharger votre compte de ${_montant} ${pays.symbole_monnaie}",
+                                                                          user_id: user.id,
+                                                                          type_notification: "welcome",
+                                                                          priorite: "normal",
+                                                                        );
+
+                                                                        await Api.saveObjetApi(
+                                                                          arguments: notif,
+                                                                          additionalArgument: {
+                                                                            'action': 'SAVE',
+                                                                            'send_notif': '1',
+                                                                            'fcm_token': '${user.fcm_token}',
+                                                                          },
+                                                                          url: Url.NotificationsUrl,
+                                                                        );
+                                                                        getUsers();
+                                                                      });
+                                                                    }
                                                                   });
-                                                                }
-                                                              });
+                                                                });
+                                                              } catch (e) {
+                                                                print("erreur in third catch: $e");
+                                                                setState(() {
+                                                                  sendPayment = false;
+                                                                });
+                                                                NToastWidget().showToastStyle(
+                                                                  context,
+                                                                  message: "Une erreur s'est produite",
+                                                                  alerteetat: ALERTEETAT.ERREUR,
+                                                                );
+                                                              }
                                                             });
-                                                          } catch (e) {
-                                                            print("erreur in third catch: $e");
-                                                            setState(() {
-                                                              sendPayment = false;
-                                                            });
-                                                            NToastWidget().showToastStyle(
-                                                              context,
-                                                              message: "Une erreur s'est produite",
-                                                              alerteetat: ALERTEETAT.ERREUR,
-                                                            );
                                                           }
-                                                        }
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }),
                                             );
                                           } else {
                                             setState(() {
@@ -465,10 +595,22 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                 ],
                                               ),
                                               widget: Container(
-                                                padding: EdgeInsets.all(12.0),
-                                                child: Text("Cette option n'est pas disponible  pour votre pays"),
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        "Cette option n'est pas disponible  pour votre pays",
+                                                        style: Style.defaultTextStyle(textSize: 10.0, textOverflow: null),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             );
+                                            setState(() {
+                                              sendPayment = false;
+                                            });
                                           }
                                         },
                                       ),
@@ -494,8 +636,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                   ),
                                 ),
                                 Text(
-                                  "Solde",
-                                  style: Style.defaultTextStyle(textSize: 12.0, textWeight: FontWeight.w100),
+                                  "Solde (${users != null && users!.pays != null ? users!.pays!.nom : "..."})",
+                                  style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
                                 ),
                               ],
                             ),
@@ -505,6 +647,30 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                             height: 40,
                             color: Colors.black.withOpacity(0.3),
                           ),
+                          if (pays_now != null && pays_now != users?.pays)
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "${users != null ? users!.solde!.isNotEmpty ? "${double.tryParse("${int.parse(users!.solde!) * currency!.value!}")!.toStringAsFixed(0)}" : "0" : "..."} ${pays_now != null ? pays_now!.symbole_monnaie : "..."}",
+                                    style: Style.defaultTextStyle(
+                                      font: GoogleFonts.nunito().fontFamily,
+                                      textWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Solde (${pays_now != null ? pays_now!.symbole_monnaie : "..."})",
+                                    style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (pays_now != null && pays_now != users?.pays)
+                            Container(
+                              width: 0.5,
+                              height: 40,
+                              color: Colors.black.withOpacity(0.3),
+                            ),
                           Expanded(
                             child: InkWell(
                               onTap: users != null
@@ -556,7 +722,7 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                   ),
                                   Text(
                                     "Code",
-                                    style: Style.defaultTextStyle(textSize: 12.0, textWeight: FontWeight.w100),
+                                    style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
                                   ),
                                 ],
                               ),

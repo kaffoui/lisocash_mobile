@@ -5,81 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "lisocash-mobile--new-",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "lisocash-mobile--new- (profile mode)",
-            "request": "launch",
+            "name": "Dart",
             "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "lisocash-mobile--new- (release mode)",
             "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        },
-        {
-            "name": "app",
-            "cwd": "packages\\app",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "app (profile mode)",
-            "cwd": "packages\\app",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "app (release mode)",
-            "cwd": "packages\\app",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        },
-        {
-            "name": "dashboard",
-            "cwd": "packages\\dashboard",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "dashboard (profile mode)",
-            "cwd": "packages\\dashboard",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "dashboard (release mode)",
-            "cwd": "packages\\dashboard",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        },
-        {
-            "name": "noyaux",
-            "cwd": "packages\\noyaux",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "noyaux (profile mode)",
-            "cwd": "packages\\noyaux",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "noyaux (release mode)",
-            "cwd": "packages\\noyaux",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
+            "program": "lib/main.dart"
         }
     ]
 }
