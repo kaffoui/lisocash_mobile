@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:noyaux/widgets/N_ButtonWidget.dart';
+import 'package:noyaux/widgets/N_DisplayTextWidget.dart';
 
-import '../models/Users.dart';
+import '../models/Frais.dart';
 import '../services/api/Api.dart';
-import '../widgets/N_ButtonWidget.dart';
-import '../widgets/N_DisplayTextWidget.dart';
 
-class UsersForms {
+class FraisForms {
   BuildContext contextFormulaire;
   Function? successCallBack;
   bool? mayPopNavigatorOnSuccess;
 
-  UsersForms(
+  FraisForms(
       {required this.contextFormulaire,
       this.successCallBack,
       this.mayPopNavigatorOnSuccess = true});
@@ -112,7 +112,7 @@ class UsersForms {
     );
   }
 
-  Widget saveFraisForm({Users? objectFrais}) {
+  Widget saveFraisForm({Frais? objectFrais}) {
     return Container();
   }
 }

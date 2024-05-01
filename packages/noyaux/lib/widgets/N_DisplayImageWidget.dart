@@ -83,6 +83,7 @@ class _NDisplayImageWidgetState extends State<NDisplayImageWidget> {
                   imageUrl: widget.imageLink!.startsWith("img/") //url venant de base de donnees
                       ? "https://${Url.urlServer}${Url.urlBase}${widget.imageLink!}"
                       : "${widget.imageLink}",
+                  httpHeaders: {'Access-Control-Allow-Origin': '*'},
                   height: widget.height ?? widget.size,
                   width: widget.width ?? widget.size,
                   color: widget.color ?? null,

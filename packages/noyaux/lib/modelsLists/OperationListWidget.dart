@@ -28,6 +28,7 @@ class OperationListWidget extends StatefulWidget {
       canEditItem,
       showOnlyForToday,
       canDeleteItem,
+      showForAdmin,
       showValidation,
       showAsSuggestedTextInputWidget,
       canAddItem,
@@ -57,6 +58,7 @@ class OperationListWidget extends StatefulWidget {
     this.showValidation = false,
     this.mayScrollHorizontal = false,
     this.canRefresh = true,
+    this.showForAdmin = false,
     this.canEditItem = false,
     this.canDeleteItem = false,
     this.showOnlyForToday = false,
@@ -108,11 +110,13 @@ class _OperationListWidgetState extends State<OperationListWidget> {
                 searchController.text = "";
 
                 listSource.clear();
-                if (value.isNotEmpty) {
+                if (value.isNotEmpty && widget.showForAdmin == false) {
                   listSource.addAll(value
-                      .where(
-                          (element) => (element.user_id_from == int.tryParse(widget.user_id!) || element.user_id_to == int.tryParse(widget.user_id!)))
+                      .where((element) => (element.user_id_from == int.tryParse(widget.user_id!) ||
+                          element.user_id_to == int.tryParse(widget.user_id!)))
                       .toList());
+                } else {
+                  listSource.addAll(value);
                 }
 
                 if (widget.onListLoaded != null) {
@@ -126,9 +130,11 @@ class _OperationListWidgetState extends State<OperationListWidget> {
                     listSource.insert(0, widget.firstOperationInList!);
                   }
                   // print("Initial data ${widget.initialOperation}");
-                  selectedOperation = widget.initialOperation != null && !widget.showAsSuggestedTextInputWidget!
+                  selectedOperation = widget.initialOperation != null &&
+                          !widget.showAsSuggestedTextInputWidget!
                       ? listSource.contains(widget.initialOperation)
-                          ? listSource.firstWhere((element) => element.id == widget.initialOperation!.id)
+                          ? listSource
+                              .firstWhere((element) => element.id == widget.initialOperation!.id)
                           : listSource[0]
                       : listSource[0];
                 }
@@ -209,22 +215,55 @@ class _OperationListWidgetState extends State<OperationListWidget> {
     final theme = Theme.of(context);
     themeRecherche = Fonctions().removeAccents(themeRecherche).trim();
     list = listSource
-        .where((element) => (Fonctions().removeAccents(element.id!.toString()).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.type_operation!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.frais_id!.toString()).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.taux_id!.toString()).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.user_id_from!.toString()).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.user_id_to!.toString()).toLowerCase().contains(themeRecherche) ||
+        .where((element) => (Fonctions()
+                .removeAccents(element.id!.toString())
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.type_operation!)
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.frais_id!.toString())
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.taux_id!.toString())
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.user_id_from!.toString())
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.user_id_to!.toString())
+                .toLowerCase()
+                .contains(themeRecherche) ||
             Fonctions().removeAccents(element.montant!).toLowerCase().contains(themeRecherche) ||
             Fonctions().removeAccents(element.motif!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.etat_operation!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.date_envoie!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.date_reception!).toLowerCase().contains(themeRecherche) ||
-            Fonctions().removeAccents(element.date_enregistrement!).toLowerCase().contains(themeRecherche)))
+            Fonctions()
+                .removeAccents(element.etat_operation!)
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.date_envoie!)
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.date_reception!)
+                .toLowerCase()
+                .contains(themeRecherche) ||
+            Fonctions()
+                .removeAccents(element.date_enregistrement!)
+                .toLowerCase()
+                .contains(themeRecherche)))
         .toList();
 
     if (widget.showOnlyForToday == true) {
-      list = list.where((element) => DateTime.parse(element.date_enregistrement!).day == DateTime.now().day).toList();
+      list = list
+          .where(
+              (element) => DateTime.parse(element.date_enregistrement!).day == DateTime.now().day)
+          .toList();
     }
 
     if (widget.showValidation == true) {
@@ -232,8 +271,12 @@ class _OperationListWidgetState extends State<OperationListWidget> {
     }
 
     return Scaffold(
-      backgroundColor: widget.backColor ?? (widget.showAsDropDown == true ? Colors.transparent : Colors.white),
-      appBar: widget.showAppBar == true ? Fonctions().defaultAppBar(context: context, titre: "${widget.title != null ? widget.title : ""}") : null,
+      backgroundColor:
+          widget.backColor ?? (widget.showAsDropDown == true ? Colors.transparent : Colors.white),
+      appBar: widget.showAppBar == true
+          ? Fonctions()
+              .defaultAppBar(context: context, titre: "${widget.title != null ? widget.title : ""}")
+          : null,
       body: Container(
         margin: widget.margin,
         padding: widget.padding,
@@ -261,7 +304,10 @@ class _OperationListWidgetState extends State<OperationListWidget> {
                         children: [
                           if (widget.showAsDropDown == true)
                             Row(
-                              children: [const Expanded(child: Text("Aucune donnée trouvée")), dropDownAction(operation: selectedOperation)],
+                              children: [
+                                const Expanded(child: Text("Aucune donnée trouvée")),
+                                dropDownAction(operation: selectedOperation)
+                              ],
                             ),
                           if (widget.showAsDropDown != true)
                             Expanded(
@@ -306,7 +352,9 @@ class _OperationListWidgetState extends State<OperationListWidget> {
         Expanded(
           child: NTextInputWidget(
             title: widget.title,
-            initialTagSelectedList: widget.initialOperation != null ? widget.initialOperation!.id!.toString().split("~|~").toList() : null,
+            initialTagSelectedList: widget.initialOperation != null
+                ? widget.initialOperation!.id!.toString().split("~|~").toList()
+                : null,
             suggestionsList: list.map((e) => e.id!.toString()).toList(),
             onChanged: (value) {
               if (widget.getSuggestedValue != null) {
@@ -342,7 +390,8 @@ class _OperationListWidgetState extends State<OperationListWidget> {
                     reloadPage: reloadPage,
                     onPressed: widget.onItemPressed != null
                         ? (selectedOperation) {
-                            if (widget.onItemPressed != null) widget.onItemPressed!(selectedOperation);
+                            if (widget.onItemPressed != null)
+                              widget.onItemPressed!(selectedOperation);
                             setState(() {
                               selectedIndex = list.indexOf(selectedOperation);
                             });
@@ -386,7 +435,8 @@ class _OperationListWidgetState extends State<OperationListWidget> {
                     reloadPage: reloadPage,
                     onPressed: widget.onItemPressed != null
                         ? (selectedActualite) {
-                            if (widget.onItemPressed != null) widget.onItemPressed!(selectedActualite);
+                            if (widget.onItemPressed != null)
+                              widget.onItemPressed!(selectedActualite);
                           }
                         : null,
                     optionWidget: dropDownAction(operation: actualite),

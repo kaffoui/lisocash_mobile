@@ -1,4 +1,3 @@
-import 'package:dashboard/DashboardConfigurationPage.dart';
 import 'package:dashboard/DashboardFraisPage.dart';
 import 'package:dashboard/DashboardOperationPage.dart';
 import 'package:dashboard/DashboardPaysPage.dart';
@@ -81,13 +80,13 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
           visible: true,
           mayShowParentAppBar: true,
         ),
-        DrawerItem(
+        /*DrawerItem(
           iconData: Icons.settings_rounded,
           name: "Toutes les configurations",
           page: DashboardConfigurationPages(),
           visible: true,
           mayShowParentAppBar: true,
-        ),
+        ),*/
         DrawerItem(
           iconData: Icons.logout,
           name: "Déconnexion",
@@ -269,7 +268,10 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
                             text: "Oui",
                             action: () async {
                               await Preferences.clearData().then((value) {
-                                Fonctions().openPageToGo(context: context, pageToGo: SplashScreenPage(), replacePage: true);
+                                Fonctions().openPageToGo(
+                                    context: context,
+                                    pageToGo: SplashScreenPage(),
+                                    replacePage: true);
                               });
                             },
                           ),
@@ -319,11 +321,14 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
         drawer: Fonctions().isSmallScreen(context) ? myMenuWidget : null,
         body: Row(
           children: [
-            if (!Fonctions().isSmallScreen(context)) Container(width: menuCollapsed ? 80 : 220, child: myMenuWidget),
+            if (!Fonctions().isSmallScreen(context))
+              Container(width: menuCollapsed ? 80 : 220, child: myMenuWidget),
             Expanded(
               child: Column(
                 children: [
-                  if (!Fonctions().isSmallScreen(context) && menuItemsList[currentMenuIndex].mayShowParentAppBar == true) globalAppBar,
+                  if (!Fonctions().isSmallScreen(context) &&
+                      menuItemsList[currentMenuIndex].mayShowParentAppBar == true)
+                    globalAppBar,
                   if (menuItemsList[currentMenuIndex].page != null)
                     Expanded(
                       child: MaterialApp(

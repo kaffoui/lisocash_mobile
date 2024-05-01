@@ -5,6 +5,7 @@ import 'package:noyaux/constants/styles.dart';
 import 'package:noyaux/models/Notifications.dart';
 import 'package:noyaux/models/Users.dart';
 import 'package:noyaux/modelsLists/UsersListWidget.dart';
+import 'package:noyaux/services/Preferences.dart';
 import 'package:noyaux/services/api/Api.dart';
 import 'package:noyaux/services/url.dart';
 import 'package:noyaux/widgets/N_ButtonWidget.dart';
@@ -12,6 +13,7 @@ import 'package:noyaux/widgets/N_CardWidget.dart';
 import 'package:noyaux/widgets/N_DisplayImageWidget.dart';
 import 'package:noyaux/widgets/N_DisplayInfos.dart';
 import 'package:noyaux/widgets/N_DisplayTextWidget.dart';
+import 'package:noyaux/widgets/N_DropDownWidget.dart';
 import 'package:noyaux/widgets/N_MediaWidget.dart';
 import 'package:noyaux/widgets/N_ResponsiveWidget.dart';
 
@@ -24,6 +26,7 @@ class DashboardUsersPages extends StatefulWidget {
 
 class _DashboardUsersPagesState extends State<DashboardUsersPages> {
   Users? users;
+
   @override
   void dispose() {
     super.dispose();
@@ -105,6 +108,7 @@ class _DashboardUsersPagesState extends State<DashboardUsersPages> {
 
 class UsersDetailsAdmin extends StatefulWidget {
   final Users users;
+
   const UsersDetailsAdmin({super.key, required this.users});
 
   @override
@@ -114,12 +118,37 @@ class UsersDetailsAdmin extends StatefulWidget {
 class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
   late ThemeData theme;
 
+  late Users users;
+
   bool validate_preuves = false;
+
+  List<String> statut_user = [
+        STATUT_USER.IS_VERIFIER.name.toCapitalizedCase(),
+        STATUT_USER.IS_NON_VERIFIER.name.toCapitalizedCase(),
+        STATUT_USER.IS_BLACKLISTED.name.toCapitalizedCase(),
+        STATUT_USER.IS_REDLISTED.name.toCapitalizedCase(),
+      ],
+      type_user = [
+        TYPE_USER.ADMIN.name.toCapitalizedCase(),
+        TYPE_USER.AGENT.name.toCapitalizedCase(),
+        TYPE_USER.USER.name.toCapitalizedCase(),
+      ];
+
+  String selectedStatutUser = "", selectedTypeUser = "";
+
+  @override
+  void initState() {
+    users = widget.users;
+    selectedStatutUser = users.statut!.toCapitalizedCase();
+    selectedTypeUser = users.type_user!.toCapitalizedCase();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
     return Column(
+      key: ValueKey<String>(users.toString()),
       children: <Widget>[
         Expanded(
           child: SingleChildScrollView(
@@ -131,15 +160,16 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      widget.users.lien_pp!.isNotEmpty
+                      users.lien_pp!.isNotEmpty
                           ? CircleAvatar(
                               radius: 80,
                               backgroundImage: NetworkImage(
-                                "https://${Url.urlServer}/${Url.urlImageBase}/${widget.users.lien_pp}",
+                                "https://${Url.urlServer}/${Url.urlImageBase}${users.lien_pp}",
                               ),
                             )
                           : NDisplayImageWidget(
-                              imageLink: "https://${Url.urlServer}/${Url.urlImageBase}/${widget.users.lien_pp}",
+                              imageLink:
+                                  "https://${Url.urlServer}/${Url.urlImageBase}${users.lien_pp}",
                               size: 100,
                               showDefaultImage: true,
                               isRounded: true,
@@ -152,7 +182,7 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       NDisplayTextWidget(
-                        text: "${widget.users.nom} ${widget.users.prenom}",
+                        text: "${users.nom} ${users.prenom}",
                         theme: BASE_TEXT_THEME.TITLE_LARGE,
                         fontWeight: FontWeight.w600,
                       ),
@@ -163,28 +193,29 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                   NDisplayInfos(
                     leftIcon: Icons.location_on_outlined,
                     title: 'Adresse',
-                    content: "${widget.users.adresse}, ${widget.users.quartier}, ${widget.users.ville}, ${widget.users.pays!.nom}",
+                    content:
+                        "${users.adresse}, ${users.quartier}, ${users.ville}, ${users.pays!.nom}",
                     showAsCard: true,
                   ),
                   SizedBox(height: 8.0),
                   NDisplayInfos(
                     leftIcon: Icons.mail_outline_outlined,
                     title: 'Email',
-                    content: "${widget.users.mail}",
+                    content: "${users.mail}",
                     showAsCard: true,
                   ),
                   SizedBox(height: 8.0),
                   NDisplayInfos(
                     leftIcon: Icons.phone_outlined,
                     title: 'Téléphone',
-                    content: "${widget.users.code_telephone} ${widget.users.telephone}",
+                    content: "${users.code_telephone} ${users.telephone}",
                     showAsCard: true,
                   ),
                   SizedBox(height: 8.0),
                   NDisplayInfos(
                     leftIcon: Icons.phone_outlined,
                     title: 'Whatsapp',
-                    content: "${widget.users.code_whatsapp} ${widget.users.whatsapp}",
+                    content: "${users.code_whatsapp} ${users.whatsapp}",
                     showAsCard: true,
                   ),
                   SizedBox(height: 8.0),
@@ -204,21 +235,27 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                                         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                         child: Text(
                                           "Preuve d'Adresse",
-                                          style: Style.defaultTextStyle(textWeight: FontWeight.w500, textSize: 12.0),
+                                          style: Style.defaultTextStyle(
+                                              textWeight: FontWeight.w500, textSize: 12.0),
                                         ),
                                       ),
                                     ),
                                     Container(
                                       padding: EdgeInsets.only(right: 16),
                                       child: Icon(
-                                        widget.users.isAdresseValidated ? Icons.check_circle_outline_outlined : Icons.pending_outlined,
-                                        color: widget.users.isAdresseValidated ? Colors.green : theme.colorScheme.secondary,
+                                        users.isAdresseValidated
+                                            ? Icons.check_circle_outline_outlined
+                                            : Icons.pending_outlined,
+                                        color: users.isAdresseValidated
+                                            ? Colors.green
+                                            : theme.colorScheme.secondary,
                                       ),
                                     ),
                                   ],
                                 ),
                                 NMediaWidget(
-                                  urlImage: "https://${Url.urlServer}/${Url.urlImageBase}${widget.users.lien_adresse}",
+                                  urlImage:
+                                      "https://${Url.urlServer}/${Url.urlImageBase}${users.lien_adresse}",
                                   height: 200,
                                   width: double.infinity,
                                   imageQuality: 20,
@@ -243,21 +280,27 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                                         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                         child: Text(
                                           "Pièce d'Identité",
-                                          style: Style.defaultTextStyle(textWeight: FontWeight.w500, textSize: 12.0),
+                                          style: Style.defaultTextStyle(
+                                              textWeight: FontWeight.w500, textSize: 12.0),
                                         ),
                                       ),
                                     ),
                                     Container(
                                       padding: EdgeInsets.only(right: 16),
                                       child: Icon(
-                                        widget.users.isAdresseValidated ? Icons.check_circle_outline_outlined : Icons.pending_outlined,
-                                        color: widget.users.isAdresseValidated ? Colors.green : theme.colorScheme.secondary,
+                                        users.isAdresseValidated
+                                            ? Icons.check_circle_outline_outlined
+                                            : Icons.pending_outlined,
+                                        color: users.isAdresseValidated
+                                            ? Colors.green
+                                            : theme.colorScheme.secondary,
                                       ),
                                     ),
                                   ],
                                 ),
                                 NMediaWidget(
-                                  urlImage: "https://${Url.urlServer}/${Url.urlImageBase}${widget.users.lien_cni}",
+                                  urlImage:
+                                      "https://${Url.urlServer}/${Url.urlImageBase}${users.lien_cni}",
                                   height: 200,
                                   width: double.infinity,
                                   imageQuality: 20,
@@ -266,7 +309,7 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                                   backgroundRadius: 0.0,
                                 ),
                                 SizedBox(width: 12.0),
-                                if (!widget.users.isCniValidated && !widget.users.isAdresseValidated)
+                                if (!users.isCniValidated && !users.isAdresseValidated)
                                   Container(
                                     padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
                                     child: Row(
@@ -279,10 +322,11 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                                             setState(() {
                                               validate_preuves = true;
                                             });
-                                            final user = widget.users;
+                                            final user = users;
                                             user.is_cni_validated = "1";
                                             user.is_adresse_validated = "1";
-                                            user.statut = STATUT_USER.IS_VERIFIER.name.toLowerCase();
+                                            user.statut =
+                                                STATUT_USER.IS_VERIFIER.name.toLowerCase();
 
                                             Map<String, dynamic> paramSup = {
                                               "action": "SAVE",
@@ -295,7 +339,8 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                                             ).then((value) async {
                                               final notif = Notifications(
                                                 titre: "${user.nom} ${user.prenom}",
-                                                message: "Vos preuves sont validés. Vous pouvez effectué des transactions.",
+                                                message:
+                                                    "Vos preuves sont validés. Vous pouvez effectué des transactions.",
                                                 user_id: user.id,
                                                 type_notification: "transaction",
                                                 priorite: "normal",
@@ -334,21 +379,21 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                       NDisplayInfos(
                         leftIcon: Icons.network_check_rounded,
                         title: 'Adresse IP',
-                        content: "${widget.users.ip_adresse}",
+                        content: "${users.ip_adresse}",
                         showAsCard: true,
                       ),
                       SizedBox(height: 8.0),
                       NDisplayInfos(
                         leftIcon: Icons.money_rounded,
                         title: 'Solde',
-                        content: "${widget.users.solde} ${widget.users.pays!.symbole_monnaie}",
+                        content: "${users.solde} ${users.pays!.symbole_monnaie}",
                         showAsCard: true,
                       ),
                       SizedBox(height: 8.0),
                       NDisplayInfos(
                         leftIcon: Icons.password_rounded,
                         title: 'Code Secret',
-                        content: "${widget.users.code_secret}",
+                        content: "${users.code_secret}",
                         showAsCard: true,
                       ),
                       SizedBox(height: 8.0),
@@ -359,7 +404,7 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                               leftIcon: Icons.person_outline,
                               title: 'Statut',
                               content:
-                                  "${widget.users.isVerifier ? "Vérifier" : widget.users.isNonVerifier ? "Non vérifier" : widget.users.isBlacklisted ? "Blocage" : widget.users.isRedlisted ? "Blocage critique" : ""}",
+                                  "${users.isVerifier ? "Vérifier" : users.isNonVerifier ? "Non vérifier" : users.isBlacklisted ? "Blocage" : users.isRedlisted ? "Blocage critique" : ""}",
                               showAsCard: true,
                             ),
                           ),
@@ -368,7 +413,7 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                             action: () {
                               Fonctions().showWidgetAsDialog(
                                 context: context,
-                                widget: changeTypeUser(),
+                                widget: changeStatusUser(),
                               );
                             },
                           )
@@ -382,7 +427,7 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                               leftIcon: Icons.person_add_rounded,
                               title: 'Type',
                               content:
-                                  "${widget.users.isUser ? "Utilisateur" : widget.users.isAdmin ? "Administrateur" : widget.users.isSuperAdmin ? "Super Admin" : widget.users.isAgent ? "Agent" : widget.users.isDistributeur ? "Distributeur" : ""}",
+                                  "${users.isUser ? "Utilisateur" : users.isAdmin ? "Administrateur" : users.isSuperAdmin ? "Super Admin" : users.isAgent ? "Agent" : users.isDistributeur ? "Distributeur" : ""}",
                               showAsCard: true,
                             ),
                           ),
@@ -391,7 +436,7 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
                             action: () {
                               Fonctions().showWidgetAsDialog(
                                 context: context,
-                                widget: changeStatusUser(),
+                                widget: changeTypeUser(),
                               );
                             },
                           )
@@ -407,30 +452,154 @@ class _UsersDetailsAdminState extends State<UsersDetailsAdmin> {
       ],
     );
   }
-}
 
-Widget changeStatusUser() {
-  return Container(
-    width: 500,
-    child: StatefulBuilder(
-      builder: (context, setState) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-        );
-      },
-    ),
-  );
-}
+  Widget changeStatusUser() {
+    bool send = false;
+    return Container(
+      width: 500,
+      child: StatefulBuilder(
+        builder: (ctx, setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 8.0),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        NDisplayTextWidget(
+                          text: "Modifier le statut de l'utilisateur",
+                          theme: BASE_TEXT_THEME.LABEL_LARGE,
+                          textAlign: TextAlign.center,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ],
+                    ),
+                    Spacer(),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      color: Theme.of(context).primaryColor,
+                      icon: Icon(Icons.close),
+                    ),
+                    SizedBox(width: 12.0),
+                  ],
+                ),
+              ),
+              NDropDownWidget(
+                initialObject: selectedStatutUser,
+                listObjet: statut_user,
+                onChangedDropDownValue: (value) {
+                  setState(() {
+                    selectedStatutUser = value;
+                  });
+                },
+              ),
+              NButtonWidget(
+                text: "Valider",
+                load: send,
+                action: () async {
+                  setState(() {
+                    send = true;
+                  });
 
-Widget changeTypeUser() {
-  return Container(
-    width: 500,
-    child: StatefulBuilder(
-      builder: (context, setState) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-        );
-      },
-    ),
-  );
+                  final user = users;
+
+                  user.statut = selectedStatutUser.toLowerCase();
+
+                  Map<String, String> paramsSup = {
+                    "action": "SAVE",
+                  };
+
+                  await Api.saveObjetApi(
+                          arguments: user, url: Url.UsersUrl, additionalArgument: paramsSup)
+                      .then(
+                    (value) async {
+                      if (value["saved"] == true) {
+                        await Preferences()
+                            .getUsersListFromLocal(id: value["inserted_id"])
+                            .then((value) {
+                          setState(() {
+                            users = value.first;
+                            send = false;
+                            Navigator.pop(ctx);
+                            Fonctions().openPageToGo(
+                                context: context,
+                                pageToGo: DashboardUsersPages(),
+                                replacePage: true);
+                          });
+                        });
+                      }
+                    },
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget changeTypeUser() {
+    bool send = false;
+    return Container(
+      width: 500,
+      child: StatefulBuilder(
+        builder: (context, setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 8.0),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        NDisplayTextWidget(
+                          text: "Modifier le type de l'utilisateur",
+                          theme: BASE_TEXT_THEME.LABEL_LARGE,
+                          textAlign: TextAlign.center,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ],
+                    ),
+                    Spacer(),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      color: Theme.of(context).primaryColor,
+                      icon: Icon(Icons.close),
+                    ),
+                    SizedBox(width: 12.0),
+                  ],
+                ),
+              ),
+              NDropDownWidget(
+                initialObject: selectedTypeUser,
+                listObjet: type_user,
+                onChangedDropDownValue: (value) {
+                  setState(() {
+                    selectedStatutUser = value;
+                  });
+                },
+              ),
+              NButtonWidget(
+                text: "Valider",
+                load: send,
+                action: () {},
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 }

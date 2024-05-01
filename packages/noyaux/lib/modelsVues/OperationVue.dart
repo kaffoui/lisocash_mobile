@@ -9,12 +9,10 @@ import '../constants/fonctions.dart';
 import '../models/Notifications.dart';
 import '../models/Operation.dart';
 import '../models/Users.dart';
-import '../modelsDetails/OperationDetailsPage.dart';
 import '../services/Preferences.dart';
 import '../services/api/Api.dart';
 import '../widgets/N_CardWidget.dart';
 import '../widgets/N_DisplayTextWidget.dart';
-import '../widgets/N_MotionAnimationWidget.dart';
 import '../widgets/N_ToastWidget.dart';
 
 class VueOperation extends StatefulWidget {
@@ -65,7 +63,7 @@ class _VueOperationState extends State<VueOperation> {
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             if (kIsWeb) {
-              if (widget.onPressed != null) {
+              /*if (widget.onPressed != null) {
                 widget.onPressed!(widget.operation);
               } else {
                 Navigator.push(
@@ -77,7 +75,306 @@ class _VueOperationState extends State<VueOperation> {
                     ),
                   ),
                 );
-              }
+              }*/
+              widget.onPressed!(widget.operation);
+              Fonctions().showWidgetAsDialog(
+                context: context,
+                title: "Détails de la transaction",
+                widget: NCardWidget(
+                  elevation: .2,
+                  margin: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      SizedBox(height: 10.0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Type operationn".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.type_operation}".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Statut".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.etat_operation}".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Montant envoyer".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text:
+                                    "${widget.operation?.montant!.split("~")[0]} ${widget.operation?.user_from?.pays?.symbole_monnaie}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Montant recu".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text:
+                                    "${widget.operation?.montant!.split("~")[1]} ${widget.operation?.user_to?.pays?.symbole_monnaie}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Frais appliqué".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.frais?.frais_pourcentage} %",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Motif".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "${widget.operation?.motif}".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Expéditeur".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text:
+                                    "${widget.operation?.user_from?.nom} ${widget.operation?.user_from?.prenom}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Bénéficiaire".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text:
+                                    "${widget.operation?.user_to?.nom} ${widget.operation?.user_to?.prenom}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(height: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: "Date de transaction".toCapitalizedCase(),
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w700,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text: ":",
+                                textAlign: TextAlign.center,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: NDisplayTextWidget(
+                                text:
+                                    "${Fonctions().displayDate(widget.operation!.date_enregistrement!)}",
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.w300,
+                                theme: BASE_TEXT_THEME.LABEL_SMALL,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10.0),
+                    ],
+                  ),
+                ),
+              );
             } else {
               Fonctions().showWidgetAsModalSheet(
                 context: context,
@@ -197,7 +494,8 @@ class _VueOperationState extends State<VueOperation> {
                             ),
                             Expanded(
                               child: NDisplayTextWidget(
-                                text: "${widget.operation?.montant!.split("~")[0]} ${widget.operation?.user_from?.pays?.symbole_monnaie}",
+                                text:
+                                    "${widget.operation?.montant!.split("~")[0]} ${widget.operation?.user_from?.pays?.symbole_monnaie}",
                                 textAlign: TextAlign.left,
                                 fontWeight: FontWeight.w300,
                                 theme: BASE_TEXT_THEME.LABEL_SMALL,
@@ -228,7 +526,8 @@ class _VueOperationState extends State<VueOperation> {
                             ),
                             Expanded(
                               child: NDisplayTextWidget(
-                                text: "${widget.operation?.montant!.split("~")[1]} ${widget.operation?.user_to?.pays?.symbole_monnaie}",
+                                text:
+                                    "${widget.operation?.montant!.split("~")[1]} ${widget.operation?.user_to?.pays?.symbole_monnaie}",
                                 textAlign: TextAlign.left,
                                 fontWeight: FontWeight.w300,
                                 theme: BASE_TEXT_THEME.LABEL_SMALL,
@@ -321,7 +620,8 @@ class _VueOperationState extends State<VueOperation> {
                             ),
                             Expanded(
                               child: NDisplayTextWidget(
-                                text: "${widget.operation?.user_from?.nom} ${widget.operation?.user_from?.prenom}",
+                                text:
+                                    "${widget.operation?.user_from?.nom} ${widget.operation?.user_from?.prenom}",
                                 textAlign: TextAlign.left,
                                 fontWeight: FontWeight.w300,
                                 theme: BASE_TEXT_THEME.LABEL_SMALL,
@@ -352,7 +652,8 @@ class _VueOperationState extends State<VueOperation> {
                             ),
                             Expanded(
                               child: NDisplayTextWidget(
-                                text: "${widget.operation?.user_to?.nom} ${widget.operation?.user_to?.prenom}",
+                                text:
+                                    "${widget.operation?.user_to?.nom} ${widget.operation?.user_to?.prenom}",
                                 textAlign: TextAlign.left,
                                 fontWeight: FontWeight.w300,
                                 theme: BASE_TEXT_THEME.LABEL_SMALL,
@@ -383,7 +684,8 @@ class _VueOperationState extends State<VueOperation> {
                             ),
                             Expanded(
                               child: NDisplayTextWidget(
-                                text: "${Fonctions().displayDate(widget.operation!.date_enregistrement!)}",
+                                text:
+                                    "${Fonctions().displayDate(widget.operation!.date_enregistrement!)}",
                                 textAlign: TextAlign.left,
                                 fontWeight: FontWeight.w300,
                                 theme: BASE_TEXT_THEME.LABEL_SMALL,
@@ -476,7 +778,8 @@ class _VueOperationState extends State<VueOperation> {
                                           children: [
                                             Expanded(
                                               child: NDisplayTextWidget(
-                                                text: "${widget.operation!.id} --> ${widget.operation!.id}",
+                                                text:
+                                                    "${widget.operation!.id} --> ${widget.operation!.id}",
                                                 maxLines: 1,
                                                 textAlign: TextAlign.left,
                                                 overflow: TextOverflow.ellipsis,
@@ -486,7 +789,7 @@ class _VueOperationState extends State<VueOperation> {
                                         ),
                                       ),
                                     ),
-                                    Container(
+                                    /*Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
                                       width: 44,
                                       height: 44,
@@ -497,10 +800,12 @@ class _VueOperationState extends State<VueOperation> {
                                         child: Icon(
                                           Icons.arrow_circle_right,
                                           size: 30,
-                                          color: widget.isSelected! ? theme.colorScheme.primary : Colors.transparent,
+                                          color: widget.isSelected!
+                                              ? theme.colorScheme.primary
+                                              : Colors.transparent,
                                         ),
                                       ),
-                                    ),
+                                    ),*/
                                   ],
                                 ),
                               ),
@@ -521,13 +826,15 @@ class _VueOperationState extends State<VueOperation> {
                                 CircleAvatar(
                                   backgroundColor: widget.operation!.isTransfert
                                       ? Colors.green
-                                      : widget.operation!.isRechargement || widget.operation!.isDepot
+                                      : widget.operation!.isRechargement ||
+                                              widget.operation!.isDepot
                                           ? theme.colorScheme.secondary
                                           : theme.colorScheme.primary,
                                   child: Icon(
                                     widget.operation!.isTransfert
                                         ? MdiIcons.transferUp
-                                        : widget.operation!.isRechargement || widget.operation!.isDepot
+                                        : widget.operation!.isRechargement ||
+                                                widget.operation!.isDepot
                                             ? MdiIcons.transferDown
                                             : Icons.info_sharp,
                                     color: Colors.white,
@@ -540,14 +847,19 @@ class _VueOperationState extends State<VueOperation> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       if (widget.operation!.isTransfert &&
-                                          (usersConnected != null && widget.operation!.user_id_from == usersConnected!.id && usersConnected!.isUser))
+                                          (usersConnected != null &&
+                                              widget.operation!.user_id_from ==
+                                                  usersConnected!.id &&
+                                              usersConnected!.isUser))
                                         NDisplayTextWidget(
                                           text:
                                               "Envoie de ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie} à ${widget.operation!.user_to!.nom} ${widget.operation!.user_to!.prenom}",
                                           theme: BASE_TEXT_THEME.BODY_SMALL,
                                         ),
                                       if (widget.operation!.isTransfert &&
-                                          (usersConnected != null && widget.operation!.user_id_to == usersConnected!.id && usersConnected!.isUser))
+                                          (usersConnected != null &&
+                                              widget.operation!.user_id_to == usersConnected!.id &&
+                                              usersConnected!.isUser))
                                         NDisplayTextWidget(
                                           text:
                                               "Vous venez de recevoir un montant de ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie} de la part de ${widget.operation!.user_from!.nom} ${widget.operation!.user_from!.prenom}",
@@ -566,14 +878,16 @@ class _VueOperationState extends State<VueOperation> {
                                           theme: BASE_TEXT_THEME.BODY_SMALL,
                                         ),
                                       if (widget.operation!.isRetrait &&
-                                          widget.operation!.etat_operation!.toLowerCase() == ETAT_OPERATION.TERMINER.name.toLowerCase())
+                                          widget.operation!.etat_operation!.toLowerCase() ==
+                                              ETAT_OPERATION.TERMINER.name.toLowerCase())
                                         NDisplayTextWidget(
                                           text:
                                               "Vous venez de retirer un montant ${widget.operation!.montant!.split("~")[0]} ${widget.operation!.user_from!.pays!.symbole_monnaie}",
                                           theme: BASE_TEXT_THEME.BODY_SMALL,
                                         ),
                                       if (widget.operation!.isRetrait &&
-                                          widget.operation!.etat_operation!.toLowerCase() == ETAT_OPERATION.EN_COURS.name.toLowerCase())
+                                          widget.operation!.etat_operation!.toLowerCase() ==
+                                              ETAT_OPERATION.EN_COURS.name.toLowerCase())
                                         Row(
                                           children: [
                                             Expanded(
@@ -597,13 +911,20 @@ class _VueOperationState extends State<VueOperation> {
                                                   alerteetat: ALERTEETAT.AVERTISSEMENT,
                                                 );
                                                 final oper = widget.operation;
-                                                oper!.etat_operation = ETAT_OPERATION.VALIDER.name.toLowerCase();
+                                                oper!.etat_operation =
+                                                    ETAT_OPERATION.VALIDER.name.toLowerCase();
 
-                                                await Api.saveObjetApi(arguments: oper, url: Url.OperationUrl).then((operSt) async {
+                                                await Api.saveObjetApi(
+                                                        arguments: oper, url: Url.OperationUrl)
+                                                    .then((operSt) async {
                                                   if (operSt["saved"] == true) {
-                                                    await Preferences().getUsersListFromLocal(id: usersConnected!.id.toString()).then((userSt) async {
+                                                    await Preferences()
+                                                        .getUsersListFromLocal(
+                                                            id: usersConnected!.id.toString())
+                                                        .then((userSt) async {
                                                       final user = userSt.first;
-                                                      user.solde = "${int.tryParse(user.solde!)! - int.tryParse(oper.montant!)!}";
+                                                      user.solde =
+                                                          "${int.tryParse(user.solde!)! - int.tryParse(oper.montant!)!}";
 
                                                       Map<String, String> paramsSup = {
                                                         "action": "SAVE",
@@ -617,7 +938,8 @@ class _VueOperationState extends State<VueOperation> {
                                                         if (value["saved"] == true) {
                                                           final notif = Notifications(
                                                             titre: "Validation de transactions",
-                                                            message: "Vous venez de valider votre transactions",
+                                                            message:
+                                                                "Vous venez de valider votre transactions",
                                                             user_id: user.id,
                                                             type_notification: "validation",
                                                             priorite: "normal",
@@ -633,7 +955,8 @@ class _VueOperationState extends State<VueOperation> {
                                                             url: Url.NotificationsUrl,
                                                           );
 
-                                                          ScaffoldMessenger.of(context).clearSnackBars();
+                                                          ScaffoldMessenger.of(context)
+                                                              .clearSnackBars();
                                                           NToastWidget().showToastStyle(
                                                             context,
                                                             message: "Validation effectué",
@@ -646,7 +969,8 @@ class _VueOperationState extends State<VueOperation> {
                                                             replacePage: true,
                                                           );
                                                         } else {
-                                                          ScaffoldMessenger.of(context).clearSnackBars();
+                                                          ScaffoldMessenger.of(context)
+                                                              .clearSnackBars();
                                                           NToastWidget().showToastStyle(
                                                             context,
                                                             message: "Une erreur s'est produite",
@@ -672,7 +996,8 @@ class _VueOperationState extends State<VueOperation> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           NDisplayTextWidget(
-                                            text: "${Fonctions().displayDate(widget.operation!.date_envoie!)}",
+                                            text:
+                                                "${Fonctions().displayDate(widget.operation!.date_envoie!)}",
                                             theme: BASE_TEXT_THEME.LABEL_SMALL,
                                           )
                                         ],

@@ -6,9 +6,8 @@ class FirebaseServices {
   @protected
   static FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
-  @protected
   static FirebaseMessaging get firebaseMessaging => _firebaseMessaging;
-  
+
   Future<String?> getTokenUser() async {
     final token = await firebaseMessaging.getToken();
     return token;

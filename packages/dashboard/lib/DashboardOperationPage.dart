@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:noyaux/models/Operation.dart';
-import 'package:noyaux/modelsDetails/OperationDetailsPage.dart';
 import 'package:noyaux/modelsLists/OperationListWidget.dart';
 import 'package:noyaux/widgets/N_CardWidget.dart';
 import 'package:noyaux/widgets/N_ResponsiveWidget.dart';
@@ -14,6 +13,7 @@ class DashboardOperationPages extends StatefulWidget {
 
 class _DashboardOperationPagesState extends State<DashboardOperationPages> {
   Operation? operation;
+
   @override
   void dispose() {
     super.dispose();
@@ -46,25 +46,6 @@ class _DashboardOperationPagesState extends State<DashboardOperationPages> {
                     ),
                   ),
                 ),
-                if (operation != null)
-                  Expanded(
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: NCardWidget(
-                            margin: EdgeInsets.zero,
-                            child: OperationDetailsPage(
-                              key: ValueKey<String>(operation.toString()),
-                              operation: operation!,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
               ],
             ),
             smallScreen: _OperationListBloc(showAsGrid: true),
@@ -74,12 +55,14 @@ class _DashboardOperationPagesState extends State<DashboardOperationPages> {
     );
   }
 
-  Widget _OperationListBloc({Key? key, bool showAsGrid = false, Function(Operation operation)? onItemPressed}) {
+  Widget _OperationListBloc(
+      {Key? key, bool showAsGrid = false, Function(Operation operation)? onItemPressed}) {
     return OperationListWidget(
       showItemAsCard: false,
       canEditItem: false,
       canAddItem: false,
       canDeleteItem: true,
+      showForAdmin: true,
       message_error: "Aucune transactions effectués",
       padding: EdgeInsets.all(12),
       showAsGrid: showAsGrid,

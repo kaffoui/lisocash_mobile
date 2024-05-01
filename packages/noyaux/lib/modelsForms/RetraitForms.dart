@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:noyaux/models/Operation.dart';
 
-import '../models/Users.dart';
 import '../services/api/Api.dart';
 import '../widgets/N_ButtonWidget.dart';
 import '../widgets/N_DisplayTextWidget.dart';
 
-class UsersForms {
+class RetraitForms {
   BuildContext contextFormulaire;
   Function? successCallBack;
   bool? mayPopNavigatorOnSuccess;
 
-  UsersForms(
+  RetraitForms(
       {required this.contextFormulaire,
       this.successCallBack,
       this.mayPopNavigatorOnSuccess = true});
@@ -112,7 +112,7 @@ class UsersForms {
     );
   }
 
-  Widget saveFraisForm({Users? objectFrais}) {
+  Widget saveFraisForm({Operation? objectFrais}) {
     return Container();
   }
 }

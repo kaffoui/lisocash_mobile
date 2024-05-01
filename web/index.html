@@ -80,6 +80,7 @@
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
+        entrypointUrl: "main.dart.js?v=" + serviceWorkerVersion,
           serviceWorkerVersion: serviceWorkerVersion,
         },
         onEntrypointLoaded: function(engineInitializer) {
