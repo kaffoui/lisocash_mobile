@@ -22,6 +22,7 @@ import '../widgets/N_ErrorWidget.dart';
 import '../widgets/N_LoadingWidget.dart';
 import '../widgets/N_TextInputWidget.dart';
 
+/// A StatefulWidget to display user details and allow modifications.
 class UsersDetailsPage extends StatefulWidget {
   Users users;
   final bool showAppBar, mayGetOnline, skipLocalData;
@@ -47,46 +48,45 @@ class _UsersDetailsPageState extends State<UsersDetailsPage> {
 
   bool isLoading = false, getuserconnected = false;
 
-  editCallBack() {
-    if (widget.reloadParentList != null) {
-      widget.reloadParentList!();
-    }
+  /// Callback for edit operations.
+  void editCallBack() {
+    widget.reloadParentList?.call();
     Navigator.pop(context);
   }
 
-  deleteCallBack() {
-    if (widget.reloadParentList != null) {
-      widget.reloadParentList!();
-    }
+  /// Callback for delete operations.
+  void deleteCallBack() {
+    widget.reloadParentList?.call();
     Navigator.pop(context);
   }
 
+  /// Reloads the user details page.
   void reloadPage() {
-    // print("Reload Users in Details Page");
     getUsers(skipLocal: true);
   }
 
+  /// Fetches user details from local storage or API.
   void getUsers({bool skipLocal = false}) async {
     setState(() {
       isLoading = true;
     });
 
-    await Preferences(skipLocal: skipLocal)
-        .getUsersListFromLocal(id: widget.users.id.toString())
-        .then((value) => {
-              setState(() async {
-                widget.users = value.single;
-                isLoading = false;
-              })
-            })
-        .onError((error, stackTrace) => {
-              setState(() {
-                widget.users = Users();
-                isLoading = false;
-              })
-            });
+    try {
+      var value = await Preferences(skipLocal: skipLocal)
+          .getUsersListFromLocal(id: widget.users.id.toString());
+      setState(() {
+        widget.users = value.single;
+        isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        widget.users = Users();
+        isLoading = false;
+      });
+    }
   }
 
+  /// Fetches connected user details.
   void getUsersConnected() async {
     setState(() {
       getuserconnected = true;
@@ -102,16 +102,16 @@ class _UsersDetailsPageState extends State<UsersDetailsPage> {
 
   @override
   void initState() {
-    getUsersConnected();
-    if (widget.mayGetOnline == true) getUsers(skipLocal: widget.skipLocalData);
     super.initState();
+    getUsersConnected();
+    if (widget.mayGetOnline) getUsers(skipLocal: widget.skipLocalData);
   }
 
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
     return Scaffold(
-      appBar: widget.showAppBar == true
+      appBar: widget.showAppBar
           ? AppBar(
               elevation: 0.0,
               leading: IconButton(
@@ -119,9 +119,7 @@ class _UsersDetailsPageState extends State<UsersDetailsPage> {
                   Icons.arrow_back_ios_new_rounded,
                   color: Colors.white,
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context),
               ),
               title: NDisplayTextWidget(
                 text: "Détails Users".toUpperCase(),
@@ -493,6 +491,7 @@ class _UsersDetailsPageState extends State<UsersDetailsPage> {
     );
   }
 
+  /// Form to save or update user details.
   Widget saveUsersForm({Users? objectUsers}) {
     TextEditingController firstnameController = TextEditingController(text: objectUsers != null ? objectUsers.prenom ?? '' : null);
     TextEditingController lastnameController = TextEditingController(text: objectUsers != null ? objectUsers.nom ?? '' : null);
@@ -508,7 +507,6 @@ class _UsersDetailsPageState extends State<UsersDetailsPage> {
     GlobalKey<FormFieldState> emailKey = GlobalKey<FormFieldState>();
     GlobalKey<FormFieldState> adresseKey = GlobalKey<FormFieldState>();
     GlobalKey<FormFieldState> quartierKey = GlobalKey<FormFieldState>();
-    GlobalKey<FormFieldState> villeKey = GlobalKey<FormFieldState>();
     GlobalKey<FormFieldState> whatsappKey = GlobalKey<FormFieldState>();
     GlobalKey<FormFieldState> telephoneKey = GlobalKey<FormFieldState>();
 

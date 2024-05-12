@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:noyaux/widgets/N_DisplayImageWidget.dart';
 
@@ -30,7 +32,6 @@ class MyThemeExtension extends ThemeExtension<MyThemeExtension> {
 
   @override
   ThemeExtension<MyThemeExtension> lerp(covariant ThemeExtension<MyThemeExtension>? other, double t) {
-    // TODO: implement lerp
     if (other is! MyThemeExtension) {
       return this;
     }

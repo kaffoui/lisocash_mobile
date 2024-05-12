@@ -237,7 +237,6 @@ class Api {
     try {
       http.Response response = await http.post(url, body: params);
 
-      String json = jsonEncode(jsonDecode(response.body)['data']).toString();
       if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
         return {"send": true};
       } else {

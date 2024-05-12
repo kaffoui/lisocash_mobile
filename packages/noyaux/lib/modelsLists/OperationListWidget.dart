@@ -6,6 +6,7 @@ import '../models/Operation.dart';
 import '../modelsVues/OperationVue.dart';
 import '../services/Preferences.dart';
 import '../widgets/N_ButtonWidget.dart';
+import '../widgets/N_DisplayTextWidget.dart';
 import '../widgets/N_DropDownWidget.dart';
 import '../widgets/N_ErrorWidget.dart';
 import '../widgets/N_LoadingWidget.dart';
@@ -380,28 +381,142 @@ class _OperationListWidgetState extends State<OperationListWidget> {
             },
           );
         },
-        child: ListView(
-          padding: EdgeInsets.only(bottom: 96),
-          children: list.map((operation) {
-            return widget.buildCustomItemView != null
-                ? widget.buildCustomItemView!(operation) as Widget
-                : VueOperation(
-                    operation: operation,
-                    reloadPage: reloadPage,
-                    onPressed: widget.onItemPressed != null
-                        ? (selectedOperation) {
-                            if (widget.onItemPressed != null)
-                              widget.onItemPressed!(selectedOperation);
-                            setState(() {
-                              selectedIndex = list.indexOf(selectedOperation);
-                            });
-                          }
-                        : null,
-                    isSelected: selectedIndex == list.indexOf(operation),
-                    optionWidget: dropDownAction(operation: operation),
-                    showAsCard: widget.showItemAsCard,
-                  );
-          }).toList(),
+        child: Column(
+          children: [
+            Container(
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          width: 56,
+                          height: 56,
+                          alignment: Alignment.center,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: NDisplayTextWidget(
+                                  text: "",
+                                  maxLines: 1,
+                                  textAlign: TextAlign.left,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: NDisplayTextWidget(
+                                    text: "Opération type".toCapitalizedCase(),
+                                    maxLines: 1,
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: NDisplayTextWidget(
+                              text: "Acteurs",
+                              maxLines: 1,
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: NDisplayTextWidget(
+                              text: "Montant envoyer".toCapitalizedCase(),
+                              maxLines: 1,
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: NDisplayTextWidget(
+                              text: "Montant recu".toCapitalizedCase(),
+                              maxLines: 1,
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.only(bottom: 96),
+                children: list.map((operation) {
+                  return widget.buildCustomItemView != null
+                      ? widget.buildCustomItemView!(operation) as Widget
+                      : VueOperation(
+                          operation: operation,
+                          reloadPage: reloadPage,
+                          onPressed: widget.onItemPressed != null
+                              ? (selectedOperation) {
+                                  if (widget.onItemPressed != null)
+                                    widget.onItemPressed!(selectedOperation);
+                                  setState(() {
+                                    selectedIndex = list.indexOf(selectedOperation);
+                                  });
+                                }
+                              : null,
+                          isSelected: selectedIndex == list.indexOf(operation),
+                          optionWidget: dropDownAction(operation: operation),
+                          showAsCard: widget.showItemAsCard,
+                        );
+                }).toList(),
+              ),
+            ),
+          ],
         ),
       ),
     );

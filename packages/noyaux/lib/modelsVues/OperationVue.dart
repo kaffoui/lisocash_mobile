@@ -9,6 +9,7 @@ import '../constants/fonctions.dart';
 import '../models/Notifications.dart';
 import '../models/Operation.dart';
 import '../models/Users.dart';
+import '../modelsDetails/OperationDetailsPage.dart';
 import '../services/Preferences.dart';
 import '../services/api/Api.dart';
 import '../widgets/N_CardWidget.dart';
@@ -76,8 +77,17 @@ class _VueOperationState extends State<VueOperation> {
                   ),
                 );
               }*/
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OperationDetailsPage(
+                    operation: widget.operation!,
+                    reloadParentList: widget.reloadPage,
+                  ),
+                ),
+              );
               widget.onPressed!(widget.operation);
-              Fonctions().showWidgetAsDialog(
+              /*Fonctions().showWidgetAsDialog(
                 context: context,
                 title: "Détails de la transaction",
                 widget: NCardWidget(
@@ -374,7 +384,7 @@ class _VueOperationState extends State<VueOperation> {
                     ],
                   ),
                 ),
-              );
+              );*/
             } else {
               Fonctions().showWidgetAsModalSheet(
                 context: context,
@@ -722,9 +732,23 @@ class _VueOperationState extends State<VueOperation> {
                                             padding: const EdgeInsets.all(8),
                                             width: 56,
                                             height: 56,
-                                            child: Icon(
-                                              Icons.group_outlined,
-                                              color: theme.primaryColor,
+                                            child: CircleAvatar(
+                                              backgroundColor: widget.operation!.isTransfert
+                                                  ? Colors.green
+                                                  : widget.operation!.isRechargement ||
+                                                          widget.operation!.isDepot
+                                                      ? theme.colorScheme.secondary
+                                                      : theme.colorScheme.primary,
+                                              child: Icon(
+                                                widget.operation!.isTransfert
+                                                    ? MdiIcons.transferUp
+                                                    : widget.operation!.isRechargement ||
+                                                            widget.operation!.isDepot
+                                                        ? MdiIcons.transferDown
+                                                        : Icons.info_sharp,
+                                                color: Colors.white,
+                                              ),
+                                              radius: 16.0,
                                             ),
                                           ),
                                           Expanded(
@@ -735,7 +759,8 @@ class _VueOperationState extends State<VueOperation> {
                                                 children: [
                                                   Expanded(
                                                     child: NDisplayTextWidget(
-                                                      text: "${widget.operation!.id}",
+                                                      text:
+                                                          "${widget.operation!.type_operation!.toCapitalizedCase()}",
                                                       maxLines: 1,
                                                       textAlign: TextAlign.left,
                                                       overflow: TextOverflow.ellipsis,
@@ -752,13 +777,14 @@ class _VueOperationState extends State<VueOperation> {
                                       flex: 1,
                                       child: Container(
                                         alignment: Alignment.center,
-                                        // margin: EdgeInsets.only(right: 40),
                                         padding: const EdgeInsets.symmetric(horizontal: 4),
                                         child: Row(
                                           children: [
                                             Expanded(
                                               child: NDisplayTextWidget(
-                                                text: "${widget.operation!.id}",
+                                                text: widget.operation!.isTransfert
+                                                    ? "${widget.operation!.user_from!.nom!.split("")[0]}. ${widget.operation!.user_from!.prenom} --> ${widget.operation!.user_to!.nom!.split("")[0]}. ${widget.operation!.user_to!.prenom}"
+                                                    : "${widget.operation!.user_from!.nom!.split("")[0]}. ${widget.operation!.user_from!.prenom}",
                                                 maxLines: 1,
                                                 textAlign: TextAlign.left,
                                                 overflow: TextOverflow.ellipsis,
@@ -778,8 +804,27 @@ class _VueOperationState extends State<VueOperation> {
                                           children: [
                                             Expanded(
                                               child: NDisplayTextWidget(
-                                                text:
-                                                    "${widget.operation!.id} --> ${widget.operation!.id}",
+                                                text: "${widget.operation!.montant!.split("~")[0]}",
+                                                maxLines: 1,
+                                                textAlign: TextAlign.left,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        // margin: EdgeInsets.only(right: 40),
+                                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: NDisplayTextWidget(
+                                                text: "${widget.operation!.montant!.split("~")[1]}",
                                                 maxLines: 1,
                                                 textAlign: TextAlign.left,
                                                 overflow: TextOverflow.ellipsis,

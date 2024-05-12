@@ -67,7 +67,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
     if (id.isNotEmpty) {
       users = await Preferences().getUsersListFromLocal(id: id).then((value) => value.first);
 
-      currency = await Api().fetchExchangeRate(users?.pays?.symbole_monnaie, pays_now?.symbole_monnaie);
+      currency =
+          await Api().fetchExchangeRate(users?.pays?.symbole_monnaie, pays_now?.symbole_monnaie);
 
       getTransactions();
       setState(() {});
@@ -218,7 +219,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                             );
                                           } else if (users != null &&
                                               users!.isNonVerifier &&
-                                              (users!.lien_adresse!.isNotEmpty || users!.lien_cni!.isNotEmpty)) {
+                                              (users!.lien_adresse!.isNotEmpty ||
+                                                  users!.lien_cni!.isNotEmpty)) {
                                             Fonctions().showWidgetAsDialog(
                                               context: context,
                                               titleWidget: Row(
@@ -227,7 +229,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                   Expanded(
                                                     child: Text(
                                                       "Avertissement",
-                                                      style: Style.defaultTextStyle(textSize: 12.0, textColor: Colors.red),
+                                                      style: Style.defaultTextStyle(
+                                                          textSize: 12.0, textColor: Colors.red),
                                                     ),
                                                   ),
                                                   IconButton(
@@ -248,7 +251,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                     Expanded(
                                                       child: Text(
                                                         "Vos informations sont en cours de traitement. Veuillez réessayer plus tard",
-                                                        style: Style.defaultTextStyle(textSize: 10.0, textOverflow: null),
+                                                        style: Style.defaultTextStyle(
+                                                            textSize: 10.0, textOverflow: null),
                                                       ),
                                                     ),
                                                   ],
@@ -280,7 +284,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                           Map<String, dynamic>? paymentIntent;
 
                                           String montant = "";
-                                          GlobalKey<FormFieldState> montantKey = GlobalKey<FormFieldState>();
+                                          GlobalKey<FormFieldState> montantKey =
+                                              GlobalKey<FormFieldState>();
 
                                           final pays = await Fonctions().getPaysFromIp();
 
@@ -291,8 +296,10 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                             setState(() {
                                               _list_frais = list_frais
                                                   .where((element) =>
-                                                      element.operation_type!.toLowerCase() == "depot" &&
-                                                      element.moyen_paiement!.toLowerCase() == "stripe")
+                                                      element.operation_type!.toLowerCase() ==
+                                                          "depot" &&
+                                                      element.moyen_paiement!.toLowerCase() ==
+                                                          "stripe")
                                                   .toList();
                                             });
                                           }
@@ -305,6 +312,11 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                             Fonctions().showWidgetAsDialog(
                                               context: context,
                                               insetPadding: EdgeInsets.symmetric(horizontal: 12.0),
+                                              onCloseDialog: () {
+                                                setState(() {
+                                                  sendPayment = false;
+                                                });
+                                              },
                                               titleWidget: Row(
                                                 crossAxisAlignment: CrossAxisAlignment.center,
                                                 children: <Widget>[
@@ -331,7 +343,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                   child: Column(
                                                     children: [
                                                       Container(
-                                                        padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                                        padding:
+                                                            EdgeInsets.symmetric(horizontal: 12.0),
                                                         child: Row(
                                                           children: [
                                                             Expanded(
@@ -356,14 +369,16 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                           });
                                                         },
                                                         onValidated: (value) {
-                                                          if (value.isNotEmpty && int.parse(value) > 0) {
+                                                          if (value.isNotEmpty &&
+                                                              int.parse(value) > 0) {
                                                             if (int.parse(value) < 5000) {
                                                               return "Le montant de rechargement doit être supérieur ou égale 5000";
                                                             }
                                                           }
                                                           return null;
                                                         },
-                                                        rightWidget: Text("${pays.symbole_monnaie}"),
+                                                        rightWidget:
+                                                            Text("${pays.symbole_monnaie}"),
                                                       ),
                                                       if (selectedFrais != null)
                                                         Container(
@@ -376,16 +391,26 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                                     child: RichText(
                                                                       text: TextSpan(
                                                                         text: "Des frais ",
-                                                                        style: Style.defaultTextStyle(textSize: 10.0),
+                                                                        style:
+                                                                            Style.defaultTextStyle(
+                                                                                textSize: 10.0),
                                                                         children: [
                                                                           TextSpan(
-                                                                            text: "${selectedFrais.frais_pourcentage} % ",
-                                                                            style:
-                                                                                Style.defaultTextStyle(textSize: 10.0, textWeight: FontWeight.w700),
+                                                                            text:
+                                                                                "${selectedFrais.frais_pourcentage} % ",
+                                                                            style: Style
+                                                                                .defaultTextStyle(
+                                                                                    textSize: 10.0,
+                                                                                    textWeight:
+                                                                                        FontWeight
+                                                                                            .w700),
                                                                           ),
                                                                           TextSpan(
-                                                                            text: "seront appliqués lors de la transaction.",
-                                                                            style: Style.defaultTextStyle(textSize: 10.0),
+                                                                            text:
+                                                                                "seront appliqués lors de la transaction.",
+                                                                            style: Style
+                                                                                .defaultTextStyle(
+                                                                                    textSize: 10.0),
                                                                           ),
                                                                         ],
                                                                       ),
@@ -397,14 +422,17 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                               ),
                                                               if (montant.isNotEmpty)
                                                                 Container(
-                                                                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                                                  padding: EdgeInsets.symmetric(
+                                                                      horizontal: 8.0),
                                                                   child: Row(
                                                                     children: <Widget>[
                                                                       Expanded(
                                                                         child: Text(
-                                                                          "Total : ${(int.parse(montant)! * double.tryParse(selectedFrais.frais_pourcentage!)!).toStringAsFixed(0)} (${pays.symbole_monnaie})",
+                                                                          "Total : ${(int.parse(montant) * double.tryParse(selectedFrais.frais_pourcentage!)!).toStringAsFixed(0)} (${pays.symbole_monnaie})",
                                                                           textAlign: TextAlign.end,
-                                                                          style: Style.defaultTextStyle(textSize: 10.0),
+                                                                          style: Style
+                                                                              .defaultTextStyle(
+                                                                                  textSize: 10.0),
                                                                         ),
                                                                       ),
                                                                     ],
@@ -419,9 +447,11 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                           if (montantKey.currentState!.validate()) {
                                                             Navigator.pop(context);
 
-                                                            final nouveauMontant =
-                                                                (int.parse(montant) * double.tryParse(selectedFrais!.frais_pourcentage!)!)
-                                                                    .toStringAsFixed(0);
+                                                            final nouveauMontant = (int.parse(
+                                                                        montant) *
+                                                                    double.tryParse(selectedFrais!
+                                                                        .frais_pourcentage!)!)
+                                                                .toStringAsFixed(0);
 
                                                             try {
                                                               Map<String, dynamic> body = {
@@ -430,32 +460,45 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                               };
 
                                                               final response = await http.post(
-                                                                Uri.parse("https://api.stripe.com/v1/payment_intents"),
+                                                                Uri.parse(
+                                                                    "https://api.stripe.com/v1/payment_intents"),
                                                                 headers: {
-                                                                  'Authorization': 'Bearer ${cn.Constants.STRIPE_DEV_SECRET}',
-                                                                  'Content-type': 'application/x-www-form-urlencoded'
+                                                                  'Authorization':
+                                                                      'Bearer ${cn.Constants.STRIPE_DEV_SECRET}',
+                                                                  'Content-type':
+                                                                      'application/x-www-form-urlencoded'
                                                                 },
                                                                 body: body,
                                                               );
-                                                              paymentIntent = jsonDecode(response.body);
+                                                              paymentIntent =
+                                                                  jsonDecode(response.body);
                                                             } catch (e) {
-                                                              ScaffoldMessenger.of(context).clearSnackBars();
+                                                              ScaffoldMessenger.of(context)
+                                                                  .clearSnackBars();
                                                               NToastWidget().showToastStyle(
                                                                 context,
-                                                                message: "Une erreur s'est produite..",
+                                                                message:
+                                                                    "Une erreur s'est produite..",
                                                                 alerteetat: ALERTEETAT.ERREUR,
                                                               );
                                                             }
-                                                            if (paymentIntent != null && paymentIntent!.isNotEmpty) {
+                                                            if (paymentIntent != null &&
+                                                                paymentIntent!.isNotEmpty) {
                                                               try {
-                                                                await Stripe.instance.initPaymentSheet(
-                                                                  paymentSheetParameters: SetupPaymentSheetParameters(
-                                                                    paymentIntentClientSecret: paymentIntent!["client_secret"],
+                                                                await Stripe.instance
+                                                                    .initPaymentSheet(
+                                                                  paymentSheetParameters:
+                                                                      SetupPaymentSheetParameters(
+                                                                    paymentIntentClientSecret:
+                                                                        paymentIntent![
+                                                                            "client_secret"],
                                                                     style: ThemeMode.system,
                                                                     billingDetails: BillingDetails(
                                                                       email: users!.mail,
-                                                                      name: "${users!.nom} ${users!.prenom}",
-                                                                      phone: "${users!.code_telephone} ${users!.telephone}",
+                                                                      name:
+                                                                          "${users!.nom} ${users!.prenom}",
+                                                                      phone:
+                                                                          "${users!.code_telephone} ${users!.telephone}",
                                                                       address: Address(
                                                                         city: "",
                                                                         country: pays.nom,
@@ -465,72 +508,104 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                                         state: pays.region,
                                                                       ),
                                                                     ),
-                                                                    billingDetailsCollectionConfiguration: BillingDetailsCollectionConfiguration(
-                                                                      address: AddressCollectionMode.never,
+                                                                    billingDetailsCollectionConfiguration:
+                                                                        BillingDetailsCollectionConfiguration(
+                                                                      address: AddressCollectionMode
+                                                                          .never,
                                                                     ),
                                                                     merchantDisplayName: "LISOCASH",
                                                                   ),
                                                                 );
                                                               } catch (e) {
                                                                 print("erreur: $e");
-                                                                ScaffoldMessenger.of(context).clearSnackBars();
+                                                                ScaffoldMessenger.of(context)
+                                                                    .clearSnackBars();
                                                                 NToastWidget().showToastStyle(
                                                                   context,
-                                                                  message: "Une erreur s'est produite..",
+                                                                  message:
+                                                                      "Une erreur s'est produite..",
                                                                   alerteetat: ALERTEETAT.ERREUR,
                                                                 );
                                                               }
                                                             }
 
-                                                            WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+                                                            WidgetsBinding.instance
+                                                                .addPostFrameCallback(
+                                                                    (timeStamp) async {
                                                               try {
-                                                                await Stripe.instance.presentPaymentSheet().then((value) async {
+                                                                await Stripe.instance
+                                                                    .presentPaymentSheet()
+                                                                    .then((value) async {
                                                                   final user = users;
                                                                   final operation = Operation(
-                                                                    type_operation: cn.TYPE_OPERATION.DEPOT.name.toLowerCase(),
-                                                                    date_enregistrement: DateTime.now().toString(),
-                                                                    date_envoie: DateTime.now().toString(),
-                                                                    etat_operation: cn.ETAT_OPERATION.TERMINER.name.toLowerCase(),
-                                                                    montant: "$nouveauMontant~$montant",
+                                                                    type_operation: cn
+                                                                        .TYPE_OPERATION.DEPOT.name
+                                                                        .toLowerCase(),
+                                                                    date_enregistrement:
+                                                                        DateTime.now().toString(),
+                                                                    date_envoie:
+                                                                        DateTime.now().toString(),
+                                                                    etat_operation: cn
+                                                                        .ETAT_OPERATION
+                                                                        .TERMINER
+                                                                        .name
+                                                                        .toLowerCase(),
+                                                                    montant:
+                                                                        "$nouveauMontant~$montant",
                                                                     frais_id: selectedFrais!.id,
                                                                     motif: "Dépôt sur mon compte",
                                                                     taux_id: 0,
                                                                     user_id_from: user!.id,
                                                                     user_id_to: 1,
-                                                                    date_reception: DateTime.now().toString(),
+                                                                    date_reception:
+                                                                        DateTime.now().toString(),
                                                                     id: 0,
                                                                   );
 
                                                                   await Api.saveObjetApi(
                                                                     arguments: operation,
                                                                     url: Url.OperationUrl,
-                                                                    additionalArgument: {"action": "SAVE"},
+                                                                    additionalArgument: {
+                                                                      "action": "SAVE"
+                                                                    },
                                                                   ).then((value) async {
                                                                     if (value["saved"] == true) {
-                                                                      final _solde = int.parse(users!.solde!);
-                                                                      final _montant = int.parse(montant);
-                                                                      user.solde = '${_solde + _montant}';
+                                                                      final _solde =
+                                                                          int.parse(users!.solde!);
+                                                                      final _montant =
+                                                                          int.parse(montant);
+                                                                      user.solde =
+                                                                          '${_solde + _montant}';
 
                                                                       await Api.saveObjetApi(
                                                                         arguments: user,
                                                                         url: Url.UsersUrl,
-                                                                        additionalArgument: {"action": "SAVE"},
+                                                                        additionalArgument: {
+                                                                          "action": "SAVE"
+                                                                        },
                                                                       ).then((value) async {
                                                                         setState(() {
                                                                           sendPayment = false;
                                                                         });
-                                                                        ScaffoldMessenger.of(context).clearSnackBars();
-                                                                        NToastWidget().showToastStyle(
+                                                                        ScaffoldMessenger.of(
+                                                                                context)
+                                                                            .clearSnackBars();
+                                                                        NToastWidget()
+                                                                            .showToastStyle(
                                                                           context,
-                                                                          message: "Paiement effectué avec succès",
-                                                                          alerteetat: ALERTEETAT.SUCCES,
+                                                                          message:
+                                                                              "Paiement effectué avec succès",
+                                                                          alerteetat:
+                                                                              ALERTEETAT.SUCCES,
                                                                         );
                                                                         final notif = Notifications(
-                                                                          titre: "Rechargement de compte",
+                                                                          titre:
+                                                                              "Rechargement de compte",
                                                                           message:
                                                                               "Vous venez de recharger votre compte de ${_montant} ${pays.symbole_monnaie}",
                                                                           user_id: user.id,
-                                                                          type_notification: "welcome",
+                                                                          type_notification:
+                                                                              "welcome",
                                                                           priorite: "normal",
                                                                         );
 
@@ -539,7 +614,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                                           additionalArgument: {
                                                                             'action': 'SAVE',
                                                                             'send_notif': '1',
-                                                                            'fcm_token': '${user.fcm_token}',
+                                                                            'fcm_token':
+                                                                                '${user.fcm_token}',
                                                                           },
                                                                           url: Url.NotificationsUrl,
                                                                         );
@@ -555,7 +631,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                                 });
                                                                 NToastWidget().showToastStyle(
                                                                   context,
-                                                                  message: "Une erreur s'est produite",
+                                                                  message:
+                                                                      "Une erreur s'est produite",
                                                                   alerteetat: ALERTEETAT.ERREUR,
                                                                 );
                                                               }
@@ -601,7 +678,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                     Expanded(
                                                       child: Text(
                                                         "Cette option n'est pas disponible  pour votre pays",
-                                                        style: Style.defaultTextStyle(textSize: 10.0, textOverflow: null),
+                                                        style: Style.defaultTextStyle(
+                                                            textSize: 10.0, textOverflow: null),
                                                       ),
                                                     ),
                                                   ],
@@ -637,7 +715,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                 ),
                                 Text(
                                   "Solde (${users != null && users!.pays != null ? users!.pays!.nom : "..."})",
-                                  style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
+                                  style: Style.defaultTextStyle(
+                                      textSize: 8.0, textWeight: FontWeight.w100),
                                 ),
                               ],
                             ),
@@ -659,8 +738,9 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                     ),
                                   ),
                                   Text(
-                                    "Solde (${pays_now != null ? pays_now!.symbole_monnaie : "..."})",
-                                    style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
+                                    "Solde (${pays_now != null ? pays_now!.nom : "..."})",
+                                    style: Style.defaultTextStyle(
+                                        textSize: 8.0, textWeight: FontWeight.w100),
                                   ),
                                 ],
                               ),
@@ -689,7 +769,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                           message: "Génération du code en cours.",
                                         );
 
-                                        final code = "Lisocash#trans#${Fonctions().generateV4().toString().substring(0, 8)}";
+                                        final code =
+                                            "Lisocash#trans#${Fonctions().generateV4().toString().substring(0, 8)}";
                                         final user = users;
 
                                         user!.code_secret = code;
@@ -698,11 +779,18 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                           "action": "SAVE",
                                         };
 
-                                        await Api.saveObjetApi(arguments: user, url: Url.UsersUrl, additionalArgument: paramsSup).then(
+                                        await Api.saveObjetApi(
+                                                arguments: user,
+                                                url: Url.UsersUrl,
+                                                additionalArgument: paramsSup)
+                                            .then(
                                           (value) {
                                             if (value["saved"] == true) {
-                                              Preferences.removeData(key: "${Preferences.PREFS_KEY_UsersID}");
-                                              Preferences.saveData(key: "${Preferences.PREFS_KEY_UsersID}", data: value["inserted_id"]);
+                                              Preferences.removeData(
+                                                  key: "${Preferences.PREFS_KEY_UsersID}");
+                                              Preferences.saveData(
+                                                  key: "${Preferences.PREFS_KEY_UsersID}",
+                                                  data: value["inserted_id"]);
                                               getUsers();
                                               ScaffoldMessenger.of(context).clearSnackBars();
                                             }
@@ -722,7 +810,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                   ),
                                   Text(
                                     "Code",
-                                    style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
+                                    style: Style.defaultTextStyle(
+                                        textSize: 8.0, textWeight: FontWeight.w100),
                                   ),
                                 ],
                               ),
@@ -803,7 +892,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                         : Container(
                             height: 320,
                             child: NErrorWidget(
-                              message: "Vous n'avez effectué aucune transaction au cours de la journée !",
+                              message:
+                                  "Vous n'avez effectué aucune transaction au cours de la journée !",
                             ),
                           ),
               ),
