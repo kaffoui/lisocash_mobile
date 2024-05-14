@@ -695,16 +695,20 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                                 .where((element) =>
                                                     ((element.moyen_paiement!.toLowerCase() == "lisocash" &&
                                                         element.operation_type!.toLowerCase() == "transfert")) &&
-                                                    (element.from!.toLowerCase() == paysUser?.region!.toLowerCase() &&
-                                                        element.to!.toLowerCase() == initialPays?.region!.toLowerCase()))
+                                                    ((element.from!.toLowerCase() == paysUser?.region!.toLowerCase() ||
+                                                            element.from!.toLowerCase() == paysUser?.continent!.toLowerCase()) &&
+                                                        (element.to!.toLowerCase() == initialPays?.region!.toLowerCase() ||
+                                                            element.to!.toLowerCase() == initialPays?.continent!.toLowerCase())))
                                                 .toList();
                                           } else {
                                             _frais = frais
                                                 .where((element) =>
                                                     ((element.moyen_paiement!.toLowerCase() == "stripe" &&
                                                         element.operation_type!.toLowerCase() == "transfert")) &&
-                                                    (element.from!.toLowerCase() == paysUser?.region!.toLowerCase() &&
-                                                        element.to!.toLowerCase() == initialPays?.region!.toLowerCase()))
+                                                    ((element.from!.toLowerCase() == paysUser?.region!.toLowerCase() ||
+                                                            element.from!.toLowerCase() == paysUser?.continent!.toLowerCase()) &&
+                                                        (element.to!.toLowerCase() == initialPays?.region!.toLowerCase() ||
+                                                            element.to!.toLowerCase() == initialPays?.continent!.toLowerCase())))
                                                 .toList();
                                           }
                                         });

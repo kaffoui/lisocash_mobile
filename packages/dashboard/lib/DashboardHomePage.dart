@@ -1,8 +1,4 @@
-import 'package:dashboard/DashboardFraisPage.dart';
-import 'package:dashboard/DashboardOperationPage.dart';
 import 'package:dashboard/DashboardPaysPage.dart';
-import 'package:dashboard/DashboardTauxPage.dart';
-import 'package:dashboard/DashboardUsersPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +14,11 @@ import 'package:noyaux/services/url.dart';
 import 'package:noyaux/widgets/N_ButtonWidget.dart';
 import 'package:noyaux/widgets/N_DisplayTextWidget.dart';
 import 'package:noyaux/widgets/N_MenuWidget.dart';
+
+import 'DashboardAdminProfilPage.dart';
+import 'DashboardFraisPage.dart';
+import 'DashboardOperationPage.dart';
+import 'DashboardUsersPage.dart';
 
 class DashboardHomePage extends StatefulWidget {
   final int selectedPageIndex;
@@ -74,12 +75,19 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
           mayShowParentAppBar: true,
         ),
         DrawerItem(
+          iconData: Icons.person,
+          name: "Profil",
+          page: DashboardAdminProfilPage(),
+          visible: true,
+          mayShowParentAppBar: true,
+        ),
+        /*DrawerItem(
           iconData: Icons.change_circle_rounded,
           name: "Tous les taux",
           page: DashboardTauxPages(),
           visible: true,
           mayShowParentAppBar: true,
-        ),
+        ),*/
         /*DrawerItem(
           iconData: Icons.settings_rounded,
           name: "Toutes les configurations",
@@ -268,10 +276,7 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
                             text: "Oui",
                             action: () async {
                               await Preferences.clearData().then((value) {
-                                Fonctions().openPageToGo(
-                                    context: context,
-                                    pageToGo: SplashScreenPage(),
-                                    replacePage: true);
+                                Fonctions().openPageToGo(context: context, pageToGo: SplashScreenPage(), replacePage: true);
                               });
                             },
                           ),
@@ -321,14 +326,11 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
         drawer: Fonctions().isSmallScreen(context) ? myMenuWidget : null,
         body: Row(
           children: [
-            if (!Fonctions().isSmallScreen(context))
-              Container(width: menuCollapsed ? 80 : 220, child: myMenuWidget),
+            if (!Fonctions().isSmallScreen(context)) Container(width: menuCollapsed ? 80 : 220, child: myMenuWidget),
             Expanded(
               child: Column(
                 children: [
-                  if (!Fonctions().isSmallScreen(context) &&
-                      menuItemsList[currentMenuIndex].mayShowParentAppBar == true)
-                    globalAppBar,
+                  if (!Fonctions().isSmallScreen(context) && menuItemsList[currentMenuIndex].mayShowParentAppBar == true) globalAppBar,
                   if (menuItemsList[currentMenuIndex].page != null)
                     Expanded(
                       child: MaterialApp(
