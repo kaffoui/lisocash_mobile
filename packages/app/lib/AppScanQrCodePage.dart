@@ -42,6 +42,13 @@ class _AppScanQrCodePageState extends State<AppScanQrCodePage> {
       setState(() {
         result = scanData;
       });
+
+      if (result != null) {
+        print("res: ${result?.code}");
+        setState(() {
+          controller.pauseCamera();
+        });
+      }
     });
   }
 
@@ -90,6 +97,26 @@ class _AppScanQrCodePageState extends State<AppScanQrCodePage> {
         children: <Widget>[
           Container(
             height: 120,
+            child: widget.type_transfert == TYPE_OPERATION.RETRAIT.name.toLowerCase()
+                ? Container(
+                    padding: EdgeInsets.all(12.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Scanner le code QR qui s'affichera sur le télephone de l'agent.",
+                            textAlign: TextAlign.center,
+                            style: Style.defaultTextStyle(
+                              textSize: 16.0,
+                              textWeight: FontWeight.w600,
+                              textOverflow: null,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(),
           ),
           Expanded(
             child: _buildQrView(context),

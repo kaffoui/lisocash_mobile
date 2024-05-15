@@ -23,13 +23,21 @@ class SplashScreenPage extends StatefulWidget {
 }
 
 class _SplashScreenPageState extends State<SplashScreenPage> {
-  bool getusers = false;
+  bool getusers = false, changeColor = false;
 
   void checkUsers() async {
     String id = await Preferences().getIdUsers();
 
     if (id.isNotEmpty) {
       final data = await Preferences().getUsersListFromLocal(id: id);
+      final agents_data = await Preferences().getAgentsListFromLocal(id: id);
+
+      if (agents_data.isNotEmpty) {
+        setState(() {
+          changeColor = true;
+        });
+      }
+
       if (data.isNotEmpty) {
         IpAddress ipAddress = IpAddress(type: RequestType.json);
 
@@ -91,6 +99,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   Widget build(BuildContext context) {
     return MyBodyPage(
       backColor: Colors.white,
+      colorRound: changeColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

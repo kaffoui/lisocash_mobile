@@ -8,7 +8,8 @@ import 'components.dart';
 class MyBodyPage extends StatefulWidget {
   final Widget child;
   final Color backColor;
-  const MyBodyPage({super.key, required this.child, this.backColor = Constants.kPrimaryColor});
+  final bool colorRound;
+  const MyBodyPage({super.key, required this.child, this.backColor = Constants.kPrimaryColor, this.colorRound = false});
 
   @override
   State<MyBodyPage> createState() => _MyBodyPageState();
@@ -124,7 +125,9 @@ class _MyBodyPageState extends State<MyBodyPage> with TickerProviderStateMixin {
                         50,
                         widget.backColor == Constants.kPrimaryColor
                             ? [Colors.white60, Colors.white]
-                            : [Constants.kPrimaryColor, Constants.kAccentColor]),
+                            : widget.colorRound
+                                ? [Constants.kSecondColor, Colors.white70]
+                                : [Constants.kPrimaryColor, Constants.kAccentColor]),
                   ),
                 ),
                 Positioned(
@@ -135,7 +138,9 @@ class _MyBodyPageState extends State<MyBodyPage> with TickerProviderStateMixin {
                         animation4.value - 30,
                         widget.backColor == Constants.kPrimaryColor
                             ? [Colors.white60, Colors.white]
-                            : [Constants.kPrimaryColor, Constants.kAccentColor]),
+                            : widget.colorRound
+                                ? [Constants.kSecondColor, Colors.white70]
+                                : [Constants.kPrimaryColor, Constants.kAccentColor]),
                   ),
                 ),
                 Positioned(
@@ -146,7 +151,9 @@ class _MyBodyPageState extends State<MyBodyPage> with TickerProviderStateMixin {
                         30,
                         widget.backColor == Constants.kPrimaryColor
                             ? [Colors.white60, Colors.white]
-                            : [Constants.kPrimaryColor, Constants.kAccentColor]),
+                            : widget.colorRound
+                                ? [Constants.kSecondColor, Colors.white70]
+                                : [Constants.kPrimaryColor, Constants.kAccentColor]),
                   ),
                 ),
                 Positioned(
@@ -157,7 +164,9 @@ class _MyBodyPageState extends State<MyBodyPage> with TickerProviderStateMixin {
                         60,
                         widget.backColor == Constants.kPrimaryColor
                             ? [Colors.white60, Colors.white]
-                            : [Constants.kPrimaryColor, Constants.kAccentColor]),
+                            : widget.colorRound
+                                ? [Constants.kSecondColor, Colors.white70]
+                                : [Constants.kPrimaryColor, Constants.kAccentColor]),
                   ),
                 ),
                 Positioned(
@@ -168,7 +177,9 @@ class _MyBodyPageState extends State<MyBodyPage> with TickerProviderStateMixin {
                         animation4.value,
                         widget.backColor == Constants.kPrimaryColor
                             ? [Colors.white60, Colors.white]
-                            : [Constants.kPrimaryColor, Constants.kAccentColor]),
+                            : widget.colorRound
+                                ? [Constants.kSecondColor, Colors.white70]
+                                : [Constants.kPrimaryColor, Constants.kAccentColor]),
                   ),
                 ),
                 widget.child,

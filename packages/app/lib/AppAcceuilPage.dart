@@ -1,15 +1,15 @@
 import 'dart:convert';
 
+import 'package:app/AppCreatedCodeQRPage.dart';
 import 'package:app/AppHomePage.dart';
-import 'package:app/AppSendMoney.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:noyaux/constants/constants.dart' as cn;
 import 'package:noyaux/constants/fonctions.dart';
 import 'package:noyaux/constants/styles.dart';
+import 'package:noyaux/models/Agents.dart';
 import 'package:noyaux/models/Currency.dart';
 import 'package:noyaux/models/Frais.dart';
 import 'package:noyaux/models/Notifications.dart';
@@ -18,6 +18,7 @@ import 'package:noyaux/models/Pays.dart';
 import 'package:noyaux/models/Users.dart';
 import 'package:noyaux/modelsLists/OperationListWidget.dart';
 import 'package:noyaux/modelsVues/OperationVue.dart';
+import 'package:noyaux/pages/SplashScreenPage.dart';
 import 'package:noyaux/services/Preferences.dart';
 import 'package:noyaux/services/api/Api.dart';
 import 'package:noyaux/services/url.dart';
@@ -30,6 +31,7 @@ import 'package:noyaux/widgets/N_ToastWidget.dart';
 
 import 'AppErrorCritiquePage.dart';
 import 'AppScanQrCodePage.dart';
+import 'AppSendMoney.dart';
 
 class AppAcceuilPage extends StatefulWidget {
   const AppAcceuilPage({super.key});
@@ -41,11 +43,9 @@ class AppAcceuilPage extends StatefulWidget {
 class _AppAcceuilPageState extends State<AppAcceuilPage> {
   late ThemeData theme;
 
-  bool getDataUsers = false;
+  bool getDataUsers = false, getDataOperations = false, sendPayment = false, is_agent = false;
 
-  bool getDataOperations = false;
-
-  bool sendPayment = false;
+  bool devenir = false;
 
   Pays? pays_now;
 
@@ -64,6 +64,14 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
     pays_now = await Fonctions().getPaysFromIp();
 
     String id = await Preferences().getIdUsers();
+
+    final data = await Preferences().getAgentsListFromLocal(id: id);
+
+    if (data.isNotEmpty) {
+      setState(() {
+        is_agent = true;
+      });
+    }
 
     if (id.isNotEmpty) {
       users = await Preferences().getUsersListFromLocal(id: id).then((value) => value.first);
@@ -546,133 +554,174 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       NButtonWidget(
-                                        iconData: MdiIcons.transferUp,
-                                        rounded: true,
-                                        showShadow: false,
-                                        action: () {
-                                          if (users != null && users!.isVerifier) {
-                                            Fonctions().openPageToGo(
-                                              context: context,
-                                              pageToGo: AppSendMoney(),
-                                            );
-                                          } else if (users != null &&
-                                              users!.isNonVerifier &&
-                                              (users!.lien_adresse!.isNotEmpty || users!.lien_cni!.isNotEmpty)) {
-                                            Fonctions().showWidgetAsDialog(
-                                              context: context,
-                                              titleWidget: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Expanded(
-                                                    child: Text(
-                                                      "Avertissement",
-                                                      style: Style.defaultTextStyle(textSize: 12.0, textColor: Colors.red),
-                                                    ),
-                                                  ),
-                                                  IconButton(
-                                                    icon: Icon(
-                                                      Icons.close,
-                                                      color: Colors.red,
-                                                    ),
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                              widget: Container(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        "Vos informations sont en cours de traitement. Veuillez réessayer plus tard",
-                                                        style: Style.defaultTextStyle(textSize: 10.0, textOverflow: null),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          } else {
-                                            Fonctions().openPageToGo(
-                                              context: context,
-                                              pageToGo: AppErrorCritiquePage(
-                                                users: users,
-                                                showAppBar: true,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                      SizedBox(width: 30.0),
-                                      NButtonWidget(
-                                        iconData: MdiIcons.transferDown,
-                                        rounded: true,
-                                        showShadow: false,
+                                        text: "Action",
                                         load: sendPayment,
-                                        action: () async {
+                                        action: () {
                                           Fonctions().showWidgetAsDialog(
                                             context: context,
                                             title: "Actions Disponibles",
                                             widget: StatefulBuilder(
                                               builder: (context, setState) {
-                                                return Container(
-                                                  child: Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: <Widget>[
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: NButtonWidget(
-                                                              text: "Effectuer un dépôt",
-                                                              action: () {
-                                                                Fonctions().openPageToGo(
-                                                                  context: context,
-                                                                  pageToGo: AppScanQrCodePage(
-                                                                    type_transfert: cn.TYPE_OPERATION.DEPOT.name.toLowerCase(),
-                                                                  ),
-                                                                );
-                                                              },
+                                                return StatefulBuilder(builder: (context, setState) {
+                                                  return Container(
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: <Widget>[
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: NButtonWidget(
+                                                                text: "Effectuer un transfert",
+                                                                action: () {
+                                                                  if (users != null && users!.isVerifier) {
+                                                                    Fonctions().openPageToGo(
+                                                                      context: context,
+                                                                      pageToGo: AppSendMoney(),
+                                                                    );
+                                                                  } else if (users != null &&
+                                                                      users!.isNonVerifier &&
+                                                                      (users!.lien_adresse!.isNotEmpty || users!.lien_cni!.isNotEmpty)) {
+                                                                    Fonctions().showWidgetAsDialog(
+                                                                      context: context,
+                                                                      titleWidget: Row(
+                                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                                        children: <Widget>[
+                                                                          Expanded(
+                                                                            child: Text(
+                                                                              "Avertissement",
+                                                                              style: Style.defaultTextStyle(textSize: 12.0, textColor: Colors.red),
+                                                                            ),
+                                                                          ),
+                                                                          IconButton(
+                                                                            icon: Icon(
+                                                                              Icons.close,
+                                                                              color: Colors.red,
+                                                                            ),
+                                                                            onPressed: () {
+                                                                              Navigator.pop(context);
+                                                                            },
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      widget: Container(
+                                                                        padding: EdgeInsets.all(8.0),
+                                                                        child: Row(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Text(
+                                                                                "Vos informations sont en cours de traitement. Veuillez réessayer plus tard",
+                                                                                style: Style.defaultTextStyle(textSize: 10.0, textOverflow: null),
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    );
+                                                                  } else {
+                                                                    Fonctions().openPageToGo(
+                                                                      context: context,
+                                                                      pageToGo: AppErrorCritiquePage(
+                                                                        users: users,
+                                                                        showAppBar: true,
+                                                                      ),
+                                                                    );
+                                                                  }
+                                                                },
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: NButtonWidget(
-                                                              text: "Effectuer un retrait",
-                                                              isOutline: true,
-                                                              action: () {
-                                                                Fonctions().openPageToGo(
-                                                                  context: context,
-                                                                  pageToGo: AppScanQrCodePage(
-                                                                    type_transfert: cn.TYPE_OPERATION.RETRAIT.name.toLowerCase(),
-                                                                  ),
-                                                                );
-                                                              },
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: NButtonWidget(
+                                                                text: "Effectuer un dépôt",
+                                                                textColor: theme.colorScheme.secondary,
+                                                                backColor: theme.colorScheme.secondary,
+                                                                isOutline: true,
+                                                                action: () {
+                                                                  Fonctions().openPageToGo(
+                                                                    context: context,
+                                                                    pageToGo:AppCreatedCodeQRPage(
+
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: NButtonWidget(
-                                                              text: "Recharger mon compte",
-                                                              backColor: theme.colorScheme.secondary,
-                                                              action: () {
-                                                                Navigator.pop(context);
-                                                                rechargementCompteLiso();
-                                                              },
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: NButtonWidget(
+                                                                text: "Effectuer un retrait",
+                                                                isOutline: true,
+                                                                action: () {
+                                                                  Fonctions().openPageToGo(
+                                                                    context: context,
+                                                                    pageToGo: AppScanQrCodePage(
+                                                                      type_transfert: cn.TYPE_OPERATION.RETRAIT.name.toLowerCase(),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
                                                             ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: NButtonWidget(
+                                                                text: "Recharger mon compte",
+                                                                backColor: theme.colorScheme.secondary,
+                                                                action: () {
+                                                                  Navigator.pop(context);
+                                                                  rechargementCompteLiso();
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        if (is_agent == false)
+                                                          Row(
+                                                            children: [
+                                                              Expanded(
+                                                                child: NButtonWidget(
+                                                                  text: "Devenir un agent",
+                                                                  backColor: Colors.black,
+                                                                  load: devenir,
+                                                                  action: () async {
+                                                                    setState(() {
+                                                                      devenir = true;
+                                                                    });
+                                                                    final agents = Agents(
+                                                                      id_users: users!.id,
+                                                                      identifiant_unique: Fonctions().generateV4(),
+                                                                    );
+
+                                                                    await Api.saveObjetApi(
+                                                                      arguments: agents,
+                                                                      url: Url.AgentsUrl,
+                                                                      additionalArgument: {"action": "SAVE"},
+                                                                    ).then((value) {
+                                                                      if (value["saved"]) {
+                                                                        Fonctions().openPageToGo(
+                                                                          context: context,
+                                                                          pageToGo: SplashScreenPage(),
+                                                                          replacePage: true,
+                                                                        );
+                                                                      }
+                                                                    });
+                                                                  },
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
+                                                      ],
+                                                    ),
+                                                  );
+                                                });
                                               },
                                             ),
                                           );

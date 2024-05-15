@@ -58,6 +58,29 @@ class Api {
     }
   }
 
+  Future getAgents({String? id}) async {
+    Map<String, String> params = {
+      "id": id != null ? "$id" : "",
+    };
+    Uri url = Uri.https(Url.urlServer, Url.AgentsUrl, params);
+
+    try {
+      http.Response response = await http.get(url);
+
+      String json = jsonEncode(jsonDecode(response.body)['data']).toString();
+      if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Agents}$id', data: json);
+        return true;
+      } else {
+        return false;
+      }
+    } on SocketException {
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future getConfiguration({String? id}) async {
     Map<String, String> params = {
       "id": id != null ? "$id" : "",

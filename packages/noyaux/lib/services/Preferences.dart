@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:noyaux/models/Notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/Agents.dart';
 import '../models/Configuration.dart';
 import '../models/Frais.dart';
 import '../models/Operation.dart';
@@ -17,6 +18,7 @@ class Preferences {
   static const PREFS_KEY_Configuration = '2MCJM1A5RW';
   static const PREFS_KEY_Operation = 'HSF15ZV8GL';
   static const PREFS_KEY_Frais = 'XHUKAJPQSW';
+  static const PREFS_KEY_Agents = 'ILSHCNABHA';
   static const PREFS_KEY_Pays = 'PFCXDN9DC9';
   static const PREFS_KEY_Taux = 'iJmn5L46K9';
   static const PREFS_KEY_Notifications = 'TKOKYYMXLD';
@@ -79,6 +81,26 @@ class Preferences {
     }
   }
 
+  Future<List<Agents>> getAgentsListFromLocal({String? id}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String json = prefs.getString('$PREFS_KEY_Agents$id') ?? '';
+    if (json.isEmpty || skipLocal) {
+      await Api().getAgents(id: id);
+    } else {
+      Api().getAgents(id: id);
+    }
+    prefs = await SharedPreferences.getInstance();
+    json = prefs.getString('$PREFS_KEY_Agents$id') ?? '';
+
+    if (json.isEmpty) {
+      return [];
+    } else {
+      List<dynamic> body = jsonDecode(json);
+      List<Agents> list = body.map((dynamic item) => Agents.fromMap(item)).toList();
+      return list;
+    }
+  }
+
   Future<List<Frais>> getFraisListFromLocal({String? id}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String json = prefs.getString('$PREFS_KEY_Frais$id') ?? '';
@@ -99,7 +121,8 @@ class Preferences {
     }
   }
 
-  Future<List<Operation>> getOperationListFromLocal({String? id, String? user_id_from, String? user_id_to}) async {
+  Future<List<Operation>> getOperationListFromLocal(
+      {String? id, String? user_id_from, String? user_id_to}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String json = prefs.getString('$PREFS_KEY_Operation$id$user_id_from$user_id_to') ?? '';
     if (json.isEmpty || skipLocal) {
