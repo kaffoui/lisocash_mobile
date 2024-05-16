@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:app/AppCreatedCodeQRPage.dart';
 import 'package:app/AppHomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -9,7 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:noyaux/constants/constants.dart' as cn;
 import 'package:noyaux/constants/fonctions.dart';
 import 'package:noyaux/constants/styles.dart';
-import 'package:noyaux/models/Agents.dart';
 import 'package:noyaux/models/Currency.dart';
 import 'package:noyaux/models/Frais.dart';
 import 'package:noyaux/models/Notifications.dart';
@@ -18,7 +16,6 @@ import 'package:noyaux/models/Pays.dart';
 import 'package:noyaux/models/Users.dart';
 import 'package:noyaux/modelsLists/OperationListWidget.dart';
 import 'package:noyaux/modelsVues/OperationVue.dart';
-import 'package:noyaux/pages/SplashScreenPage.dart';
 import 'package:noyaux/services/Preferences.dart';
 import 'package:noyaux/services/api/Api.dart';
 import 'package:noyaux/services/url.dart';
@@ -76,7 +73,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
     if (id.isNotEmpty) {
       users = await Preferences().getUsersListFromLocal(id: id).then((value) => value.first);
 
-      currency = await Api().fetchExchangeRate(users?.pays?.symbole_monnaie, pays_now?.symbole_monnaie);
+      currency =
+          await Api().fetchExchangeRate(users?.pays?.symbole_monnaie, pays_now?.symbole_monnaie);
 
       getTransactions();
       setState(() {});
@@ -129,7 +127,9 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
     if (list_frais.isNotEmpty) {
       setState(() {
         _list_frais = list_frais
-            .where((element) => element.operation_type!.toLowerCase() == "depot" && element.moyen_paiement!.toLowerCase() == "stripe")
+            .where((element) =>
+                element.operation_type!.toLowerCase() == "depot" &&
+                element.moyen_paiement!.toLowerCase() == "stripe")
             .toList();
       });
     }
@@ -222,7 +222,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                   children: [
                                     TextSpan(
                                       text: "${selectedFrais.frais_pourcentage} % ",
-                                      style: Style.defaultTextStyle(textSize: 10.0, textWeight: FontWeight.w700),
+                                      style: Style.defaultTextStyle(
+                                          textSize: 10.0, textWeight: FontWeight.w700),
                                     ),
                                     TextSpan(
                                       text: "seront appliqués lors de la transaction.",
@@ -260,7 +261,9 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                     if (montantKey.currentState!.validate()) {
                       Navigator.pop(context);
 
-                      final nouveauMontant = (int.parse(montant) * double.tryParse(selectedFrais!.frais_pourcentage!)!).toStringAsFixed(0);
+                      final nouveauMontant =
+                          (int.parse(montant) * double.tryParse(selectedFrais!.frais_pourcentage!)!)
+                              .toStringAsFixed(0);
 
                       try {
                         Map<String, dynamic> body = {
@@ -270,7 +273,10 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
 
                         final response = await http.post(
                           Uri.parse("https://api.stripe.com/v1/payment_intents"),
-                          headers: {'Authorization': 'Bearer ${cn.Constants.STRIPE_DEV_SECRET}', 'Content-type': 'application/x-www-form-urlencoded'},
+                          headers: {
+                            'Authorization': 'Bearer ${cn.Constants.STRIPE_DEV_SECRET}',
+                            'Content-type': 'application/x-www-form-urlencoded'
+                          },
                           body: body,
                         );
                         paymentIntent = jsonDecode(response.body);
@@ -301,7 +307,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                   state: pays.region,
                                 ),
                               ),
-                              billingDetailsCollectionConfiguration: BillingDetailsCollectionConfiguration(
+                              billingDetailsCollectionConfiguration:
+                                  BillingDetailsCollectionConfiguration(
                                 address: AddressCollectionMode.never,
                               ),
                               merchantDisplayName: "LISOCASH",
@@ -363,7 +370,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                   );
                                   final notif = Notifications(
                                     titre: "Rechargement de compte",
-                                    message: "Vous venez de recharger votre compte de ${_montant} ${pays.symbole_monnaie}",
+                                    message:
+                                        "Vous venez de recharger votre compte de ${_montant} ${pays.symbole_monnaie}",
                                     user_id: user.id,
                                     type_notification: "welcome",
                                     priorite: "normal",
@@ -409,20 +417,26 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
       });
       Fonctions().showWidgetAsDialog(
         context: context,
+        paddingContent: 12.0,
         titleWidget: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Expanded(
               child: Text(
                 "Indisponible pour votre pays",
-                style: Style.defaultTextStyle(textSize: 12.0),
+                style: Style.defaultTextStyle(
+                  textSize: 12.0,
+                  textWeight: FontWeight.w600,
+                ),
               ),
             ),
             IconButton(
               icon: Icon(
                 Icons.close,
+                size: 20.0,
                 color: theme.primaryColor,
               ),
+              splashColor: Colors.black45,
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -436,7 +450,11 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
               Expanded(
                 child: Text(
                   "Cette option n'est pas disponible  pour votre pays",
-                  style: Style.defaultTextStyle(textSize: 10.0, textOverflow: null),
+                  style: Style.defaultTextStyle(
+                    textSize: 12.0,
+                    textOverflow: null,
+                    textWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -550,6 +568,7 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                       borderRadius: BorderRadius.circular(20.0),
                                     ),
                                   ),
+                                  /*
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -562,7 +581,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                             title: "Actions Disponibles",
                                             widget: StatefulBuilder(
                                               builder: (context, setState) {
-                                                return StatefulBuilder(builder: (context, setState) {
+                                                return StatefulBuilder(
+                                                    builder: (context, setState) {
                                                   return Container(
                                                     child: Column(
                                                       mainAxisSize: MainAxisSize.min,
@@ -573,59 +593,7 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                               child: NButtonWidget(
                                                                 text: "Effectuer un transfert",
                                                                 action: () {
-                                                                  if (users != null && users!.isVerifier) {
-                                                                    Fonctions().openPageToGo(
-                                                                      context: context,
-                                                                      pageToGo: AppSendMoney(),
-                                                                    );
-                                                                  } else if (users != null &&
-                                                                      users!.isNonVerifier &&
-                                                                      (users!.lien_adresse!.isNotEmpty || users!.lien_cni!.isNotEmpty)) {
-                                                                    Fonctions().showWidgetAsDialog(
-                                                                      context: context,
-                                                                      titleWidget: Row(
-                                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                                        children: <Widget>[
-                                                                          Expanded(
-                                                                            child: Text(
-                                                                              "Avertissement",
-                                                                              style: Style.defaultTextStyle(textSize: 12.0, textColor: Colors.red),
-                                                                            ),
-                                                                          ),
-                                                                          IconButton(
-                                                                            icon: Icon(
-                                                                              Icons.close,
-                                                                              color: Colors.red,
-                                                                            ),
-                                                                            onPressed: () {
-                                                                              Navigator.pop(context);
-                                                                            },
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      widget: Container(
-                                                                        padding: EdgeInsets.all(8.0),
-                                                                        child: Row(
-                                                                          children: [
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                "Vos informations sont en cours de traitement. Veuillez réessayer plus tard",
-                                                                                style: Style.defaultTextStyle(textSize: 10.0, textOverflow: null),
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    );
-                                                                  } else {
-                                                                    Fonctions().openPageToGo(
-                                                                      context: context,
-                                                                      pageToGo: AppErrorCritiquePage(
-                                                                        users: users,
-                                                                        showAppBar: true,
-                                                                      ),
-                                                                    );
-                                                                  }
+
                                                                 },
                                                               ),
                                                             ),
@@ -636,15 +604,16 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                             Expanded(
                                                               child: NButtonWidget(
                                                                 text: "Effectuer un dépôt",
-                                                                textColor: theme.colorScheme.secondary,
-                                                                backColor: theme.colorScheme.secondary,
+                                                                textColor:
+                                                                    theme.colorScheme.secondary,
+                                                                backColor:
+                                                                    theme.colorScheme.secondary,
                                                                 isOutline: true,
                                                                 action: () {
                                                                   Fonctions().openPageToGo(
                                                                     context: context,
-                                                                    pageToGo:AppCreatedCodeQRPage(
-
-                                                                    ),
+                                                                    pageToGo:
+                                                                        AppCreatedCodeQRPage(),
                                                                   );
                                                                 },
                                                               ),
@@ -658,12 +627,7 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                                 text: "Effectuer un retrait",
                                                                 isOutline: true,
                                                                 action: () {
-                                                                  Fonctions().openPageToGo(
-                                                                    context: context,
-                                                                    pageToGo: AppScanQrCodePage(
-                                                                      type_transfert: cn.TYPE_OPERATION.RETRAIT.name.toLowerCase(),
-                                                                    ),
-                                                                  );
+
                                                                 },
                                                               ),
                                                             ),
@@ -674,10 +638,11 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                             Expanded(
                                                               child: NButtonWidget(
                                                                 text: "Recharger mon compte",
-                                                                backColor: theme.colorScheme.secondary,
+                                                                backColor:
+                                                                    theme.colorScheme.secondary,
                                                                 action: () {
                                                                   Navigator.pop(context);
-                                                                  rechargementCompteLiso();
+
                                                                 },
                                                               ),
                                                             ),
@@ -697,18 +662,22 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                                                     });
                                                                     final agents = Agents(
                                                                       id_users: users!.id,
-                                                                      identifiant_unique: Fonctions().generateV4(),
+                                                                      identifiant_unique:
+                                                                          Fonctions().generateV4(),
                                                                     );
 
                                                                     await Api.saveObjetApi(
                                                                       arguments: agents,
                                                                       url: Url.AgentsUrl,
-                                                                      additionalArgument: {"action": "SAVE"},
+                                                                      additionalArgument: {
+                                                                        "action": "SAVE"
+                                                                      },
                                                                     ).then((value) {
                                                                       if (value["saved"]) {
                                                                         Fonctions().openPageToGo(
                                                                           context: context,
-                                                                          pageToGo: SplashScreenPage(),
+                                                                          pageToGo:
+                                                                              SplashScreenPage(),
                                                                           replacePage: true,
                                                                         );
                                                                       }
@@ -728,14 +697,172 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                         },
                                       ),
                                     ],
-                                  )
+                                  ),
+                                  *  */
+                                  SizedBox(height: 15.0),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            if (users != null && users!.isVerifier) {
+                                              Fonctions().openPageToGo(
+                                                context: context,
+                                                pageToGo: AppSendMoney(),
+                                              );
+                                            } else if (users != null &&
+                                                users!.isNonVerifier &&
+                                                (users!.lien_adresse!.isNotEmpty ||
+                                                    users!.lien_cni!.isNotEmpty)) {
+                                              Fonctions().showWidgetAsDialog(
+                                                context: context,
+                                                titleWidget: Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Expanded(
+                                                      child: Text(
+                                                        "Avertissement",
+                                                        style: Style.defaultTextStyle(
+                                                            textSize: 12.0, textColor: Colors.red),
+                                                      ),
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        Icons.close,
+                                                        color: Colors.red,
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                                widget: Container(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          "Vos informations sont en cours de traitement. Veuillez réessayer plus tard",
+                                                          style: Style.defaultTextStyle(
+                                                              textSize: 10.0, textOverflow: null),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              Fonctions().openPageToGo(
+                                                context: context,
+                                                pageToGo: AppErrorCritiquePage(
+                                                  users: users,
+                                                  showAppBar: true,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.arrow_circle_up,
+                                                size: 24.0,
+                                                color: Colors.black54,
+                                              ),
+                                              Text(
+                                                "Transférer",
+                                                style: Style.defaultTextStyle(
+                                                    textSize: 12.0, textWeight: FontWeight.w400),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 0.5,
+                                        height: 40,
+                                        color: Colors.black.withOpacity(0.3),
+                                      ),
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            rechargementCompteLiso();
+                                          },
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              sendPayment
+                                                  ? NAnimatorWidget(
+                                                      startAnimation: sendPayment,
+                                                      child: Icon(
+                                                        Icons.change_circle_outlined,
+                                                        size: 24.0,
+                                                        color: Colors.black54,
+                                                      ),
+                                                    )
+                                                  : Icon(
+                                                      Icons.arrow_circle_down,
+                                                      size: 24.0,
+                                                      color: Colors.black54,
+                                                    ),
+                                              Text(
+                                                "Recharger",
+                                                style: Style.defaultTextStyle(
+                                                    textSize: 12.0,
+                                                    textWeight: sendPayment
+                                                        ? FontWeight.w700
+                                                        : FontWeight.w400),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 0.5,
+                                        height: 40,
+                                        color: Colors.black.withOpacity(0.3),
+                                      ),
+                                      Expanded(
+                                        child: InkWell(
+                                          onTap: () {
+                                            Fonctions().openPageToGo(
+                                              context: context,
+                                              pageToGo: AppScanQrCodePage(
+                                                type_transfert:
+                                                    cn.TYPE_OPERATION.RETRAIT.name.toLowerCase(),
+                                              ),
+                                            );
+                                          },
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.transfer_within_a_station,
+                                                size: 24.0,
+                                                color: Colors.black54,
+                                              ),
+                                              Text(
+                                                "Retrait",
+                                                style: Style.defaultTextStyle(
+                                                    textSize: 12.0, textWeight: FontWeight.w400),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             )
                           ],
                         ),
                       ),
-                      SizedBox(height: 50.0),
+                      SizedBox(height: 15.0),
                       Row(
                         children: [
                           Expanded(
@@ -750,7 +877,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                 ),
                                 Text(
                                   "Solde (${users != null && users!.pays != null ? users!.pays!.nom : "..."})",
-                                  style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
+                                  style: Style.defaultTextStyle(
+                                      textSize: 8.0, textWeight: FontWeight.w100),
                                 ),
                               ],
                             ),
@@ -773,7 +901,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                   ),
                                   Text(
                                     "Solde (${pays_now != null ? pays_now!.nom : "..."})",
-                                    style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
+                                    style: Style.defaultTextStyle(
+                                        textSize: 8.0, textWeight: FontWeight.w100),
                                   ),
                                 ],
                               ),
@@ -802,7 +931,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                           message: "Génération du code en cours.",
                                         );
 
-                                        final code = "Lisocash#trans#${Fonctions().generateV4().toString().substring(0, 8)}";
+                                        final code =
+                                            "Lisocash#trans#${Fonctions().generateV4().toString().substring(0, 8)}";
                                         final user = users;
 
                                         user!.code_secret = code;
@@ -811,11 +941,18 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                           "action": "SAVE",
                                         };
 
-                                        await Api.saveObjetApi(arguments: user, url: Url.UsersUrl, additionalArgument: paramsSup).then(
+                                        await Api.saveObjetApi(
+                                                arguments: user,
+                                                url: Url.UsersUrl,
+                                                additionalArgument: paramsSup)
+                                            .then(
                                           (value) {
                                             if (value["saved"] == true) {
-                                              Preferences.removeData(key: "${Preferences.PREFS_KEY_UsersID}");
-                                              Preferences.saveData(key: "${Preferences.PREFS_KEY_UsersID}", data: value["inserted_id"]);
+                                              Preferences.removeData(
+                                                  key: "${Preferences.PREFS_KEY_UsersID}");
+                                              Preferences.saveData(
+                                                  key: "${Preferences.PREFS_KEY_UsersID}",
+                                                  data: value["inserted_id"]);
                                               getUsers();
                                               ScaffoldMessenger.of(context).clearSnackBars();
                                             }
@@ -835,7 +972,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                                   ),
                                   Text(
                                     "Code",
-                                    style: Style.defaultTextStyle(textSize: 8.0, textWeight: FontWeight.w100),
+                                    style: Style.defaultTextStyle(
+                                        textSize: 8.0, textWeight: FontWeight.w100),
                                   ),
                                 ],
                               ),
@@ -916,7 +1054,8 @@ class _AppAcceuilPageState extends State<AppAcceuilPage> {
                         : Container(
                             height: 320,
                             child: NErrorWidget(
-                              message: "Vous n'avez effectué aucune transaction au cours de la journée !",
+                              message:
+                                  "Vous n'avez effectué aucune transaction au cours de la journée !",
                             ),
                           ),
               ),

@@ -45,7 +45,6 @@ class _OperationDetailsPageState extends State<OperationDetailsPage> {
   }
 
   void reloadPage() {
-    // print("Reload Operation in Details Page");
     getOperation(skipLocal: true);
   }
 
@@ -151,7 +150,9 @@ class _OperationDetailsPageState extends State<OperationDetailsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(padding: EdgeInsets.all(8), child: NDisplayTextWidget(text: "id : ${widget.operation.id}")),
+                    Container(
+                        padding: EdgeInsets.all(8),
+                        child: NDisplayTextWidget(text: "id : ${widget.operation.id}")),
                   ],
                 ),
               ),
