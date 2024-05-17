@@ -253,7 +253,6 @@ class _AppHomePageState extends State<AppHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.sizeOf(context);
     theme = Theme.of(context);
     return Scaffold(
       appBar: Fonctions().defaultAppBar(
@@ -292,7 +291,7 @@ class _AppHomePageState extends State<AppHomePage> {
                 children: [
                   Expanded(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ...listItems

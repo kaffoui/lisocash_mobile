@@ -36,14 +36,20 @@ class AppSendMoney extends StatefulWidget {
 }
 
 class _AppSendMoneyState extends State<AppSendMoney> {
-  bool getUserInfos = false, send_data = false, fetch_currency = false, send_transaction = false, cannot_enter_solde = false;
+  bool getUserInfos = false,
+      send_data = false,
+      fetch_currency = false,
+      send_transaction = false,
+      cannot_enter_solde = false;
 
   int _valuePaiement = 1;
 
   late Color backgroundColor;
   late ThemeData theme;
 
-  TextEditingController montant = TextEditingController(), montant_recu = TextEditingController(), userToSendController = TextEditingController();
+  TextEditingController montant = TextEditingController(),
+      montant_recu = TextEditingController(),
+      userToSendController = TextEditingController();
 
   GlobalKey<FormFieldState> montantKey = GlobalKey<FormFieldState>(),
       montant_recuKey = GlobalKey<FormFieldState>(),
@@ -68,7 +74,9 @@ class _AppSendMoneyState extends State<AppSendMoney> {
 
   void getUsersInfos() async {
     final id = await Preferences().getIdUsers();
-    userConnected = await Preferences(skipLocal: true).getUsersListFromLocal(id: id).then((value) => value.first);
+    userConnected = await Preferences(skipLocal: true)
+        .getUsersListFromLocal(id: id)
+        .then((value) => value.first);
     setState(() {
       checkSolde();
     });
@@ -110,7 +118,8 @@ class _AppSendMoneyState extends State<AppSendMoney> {
       initialPays = _initialPays;
       paysUser = _initialPays;
       if (initialPays != paysUser) {
-        fetchCurrency(paysUser!.symbole_monnaie.toString(), initialPays!.symbole_monnaie.toString());
+        fetchCurrency(
+            paysUser!.symbole_monnaie.toString(), initialPays!.symbole_monnaie.toString());
       }
     });
   }
@@ -137,12 +146,18 @@ class _AppSendMoneyState extends State<AppSendMoney> {
       message_a_afficher = "Enrégistrement de votre paiement...";
     });
 
-    await Api.saveObjetApi(arguments: operation, url: Url.OperationUrl, additionalArgument: {"action": "SAVE"}).then((value) async {
+    await Api.saveObjetApi(
+        arguments: operation,
+        url: Url.OperationUrl,
+        additionalArgument: {"action": "SAVE"}).then((value) async {
       if (value["saved"] == true) {
         setState(() {
           message_a_afficher = "Modification de vos information";
         });
-        await Api.saveObjetApi(arguments: user_from, url: Url.UsersUrl, additionalArgument: {"action": "SAVE"}).then((value) async {
+        await Api.saveObjetApi(
+            arguments: user_from,
+            url: Url.UsersUrl,
+            additionalArgument: {"action": "SAVE"}).then((value) async {
           if (value["saved"] == true) {
             await Api.saveObjetApi(arguments: user_to, url: Url.UsersUrl, additionalArgument: {
               "action": "SAVE",
@@ -188,7 +203,7 @@ class _AppSendMoneyState extends State<AppSendMoney> {
               final notif_user_to = Notifications(
                 titre: "Transfert",
                 message:
-                    "Vous venez d'envoyer de recevoir un montant de ${nouveauMontantEnvoyer} ${user_to.pays!.symbole_monnaie} de la part de ${user_from.nom} ${user_from.prenom}",
+                    "Vous venez de recevoir un montant de ${nouveauMontantEnvoyer} ${user_to.pays!.symbole_monnaie} de la part de ${user_from.nom} ${user_from.prenom}",
                 user_id: operation.user_id_from,
                 type_notification: "welcome",
                 priorite: "normal",
@@ -238,7 +253,10 @@ class _AppSendMoneyState extends State<AppSendMoney> {
 
       final response = await http.post(
         Uri.parse("https://api.stripe.com/v1/payment_intents"),
-        headers: {'Authorization': 'Bearer ${Constants.STRIPE_DEV_SECRET}', 'Content-type': 'application/x-www-form-urlencoded'},
+        headers: {
+          'Authorization': 'Bearer ${Constants.STRIPE_DEV_SECRET}',
+          'Content-type': 'application/x-www-form-urlencoded'
+        },
         body: body,
       );
       paymentIntent = jsonDecode(response.body);
@@ -320,7 +338,8 @@ class _AppSendMoneyState extends State<AppSendMoney> {
       print("mnt: $_montant");
       if (_montant! <= _solde) {
         setState(() {
-          solde = "${double.tryParse("$_solde")! - double.tryParse("$_montant")!}";
+          solde =
+              "${(double.tryParse("$_solde")! - double.tryParse("$_montant")!).toStringAsFixed(0)}";
           cannot_enter_solde = false;
         });
       } else {
@@ -389,7 +408,8 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                         setState(() {
                           initialPays = value;
                         });
-                        fetchCurrency(paysUser!.symbole_monnaie.toString(), initialPays!.symbole_monnaie.toString());
+                        fetchCurrency(paysUser!.symbole_monnaie.toString(),
+                            initialPays!.symbole_monnaie.toString());
                       },
                     ),
                     SizedBox(height: 24.0),
@@ -450,7 +470,9 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                               Column(
                                 children: [
                                   Text(
-                                    cannot_enter_solde ? "Solde insuffisant" : "Solde: $solde ${userConnected?.pays?.symbole_monnaie}",
+                                    cannot_enter_solde
+                                        ? "Solde insuffisant"
+                                        : "Solde: $solde ${userConnected?.pays?.symbole_monnaie}",
                                     style: Style.defaultTextStyle(
                                       textSize: 10.0,
                                       textColor: cannot_enter_solde ? Colors.red : null,
@@ -541,11 +563,15 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                                   style: Style.defaultTextStyle(textSize: 10.0),
                                                   children: [
                                                     TextSpan(
-                                                      text: "${selectedFrais!.frais_pourcentage} % ",
-                                                      style: Style.defaultTextStyle(textSize: 10.0, textWeight: FontWeight.w700),
+                                                      text:
+                                                          "${selectedFrais!.frais_pourcentage} % ",
+                                                      style: Style.defaultTextStyle(
+                                                          textSize: 10.0,
+                                                          textWeight: FontWeight.w700),
                                                     ),
                                                     TextSpan(
-                                                      text: "seront appliqués lors de la transaction.",
+                                                      text:
+                                                          "seront appliqués lors de la transaction.",
                                                       style: Style.defaultTextStyle(textSize: 10.0),
                                                     ),
                                                   ],
@@ -678,7 +704,8 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                 text: "Payer",
                                 load: send_transaction,
                                 action: () async {
-                                  if (montantKey.currentState!.validate() && userToSendControllerKey.currentState!.validate()) {
+                                  if (montantKey.currentState!.validate() &&
+                                      userToSendControllerKey.currentState!.validate()) {
                                     try {
                                       setState(() {
                                         send_transaction = true;
@@ -693,22 +720,40 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                           if (_valuePaiement == 1) {
                                             _frais = frais
                                                 .where((element) =>
-                                                    ((element.moyen_paiement!.toLowerCase() == "lisocash" &&
-                                                        element.operation_type!.toLowerCase() == "transfert")) &&
-                                                    ((element.from!.toLowerCase() == paysUser?.region!.toLowerCase() ||
-                                                            element.from!.toLowerCase() == paysUser?.continent!.toLowerCase()) &&
-                                                        (element.to!.toLowerCase() == initialPays?.region!.toLowerCase() ||
-                                                            element.to!.toLowerCase() == initialPays?.continent!.toLowerCase())))
+                                                    ((element.moyen_paiement!.toLowerCase() ==
+                                                            "lisocash" &&
+                                                        element.operation_type!.toLowerCase() ==
+                                                            "transfert")) &&
+                                                    ((element.from!.toLowerCase() ==
+                                                                paysUser?.region!.toLowerCase() ||
+                                                            element.from!.toLowerCase() ==
+                                                                paysUser?.continent!
+                                                                    .toLowerCase()) &&
+                                                        (element.to!.toLowerCase() ==
+                                                                initialPays?.region!
+                                                                    .toLowerCase() ||
+                                                            element.to!.toLowerCase() ==
+                                                                initialPays?.continent!
+                                                                    .toLowerCase())))
                                                 .toList();
                                           } else {
                                             _frais = frais
                                                 .where((element) =>
-                                                    ((element.moyen_paiement!.toLowerCase() == "stripe" &&
-                                                        element.operation_type!.toLowerCase() == "transfert")) &&
-                                                    ((element.from!.toLowerCase() == paysUser?.region!.toLowerCase() ||
-                                                            element.from!.toLowerCase() == paysUser?.continent!.toLowerCase()) &&
-                                                        (element.to!.toLowerCase() == initialPays?.region!.toLowerCase() ||
-                                                            element.to!.toLowerCase() == initialPays?.continent!.toLowerCase())))
+                                                    ((element.moyen_paiement!.toLowerCase() ==
+                                                            "stripe" &&
+                                                        element.operation_type!.toLowerCase() ==
+                                                            "transfert")) &&
+                                                    ((element.from!.toLowerCase() ==
+                                                                paysUser?.region!.toLowerCase() ||
+                                                            element.from!.toLowerCase() ==
+                                                                paysUser?.continent!
+                                                                    .toLowerCase()) &&
+                                                        (element.to!.toLowerCase() ==
+                                                                initialPays?.region!
+                                                                    .toLowerCase() ||
+                                                            element.to!.toLowerCase() ==
+                                                                initialPays?.continent!
+                                                                    .toLowerCase())))
                                                 .toList();
                                           }
                                         });
@@ -732,7 +777,8 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                         final user_to = userToSend;
 
                                         user_from!.solde = solde;
-                                        user_to!.solde = "${int.tryParse(user_to.solde!)! + int.parse(montant_recu.text)}";
+                                        user_to!.solde =
+                                            "${int.tryParse(user_to.solde!)! + int.parse(montant_recu.text)}";
 
                                         operation.user_id_from = user_from.id;
                                         operation.user_id_to = user_to.id;
@@ -748,11 +794,14 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                           );
                                         } else {
                                           // Stripe
-                                          await payment("$nouveauMontantEnvoyer", "${paysUser!.symbole_monnaie}").then((value) {
+                                          await payment("$nouveauMontantEnvoyer",
+                                                  "${paysUser!.symbole_monnaie}")
+                                              .then((value) {
                                             if (value) {
                                               save_operation(
                                                 operation: operation,
-                                                nouveauMontantEnvoyer: int.parse(nouveauMontantEnvoyer),
+                                                nouveauMontantEnvoyer:
+                                                    int.parse(nouveauMontantEnvoyer),
                                                 nouveauMontantRecevoir: int.parse(montant.text),
                                                 user_from: user_from,
                                                 user_to: user_to,
