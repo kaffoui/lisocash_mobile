@@ -6,6 +6,7 @@ import 'Users.dart';
 class Agents {
   int? id_users;
   String? identifiant_unique;
+  int? solde;
   String? date_enregistrement;
 
   Users? users;
@@ -13,6 +14,7 @@ class Agents {
   Agents({
     this.id_users,
     this.identifiant_unique,
+    this.solde,
     this.date_enregistrement,
     this.users,
   });
@@ -20,12 +22,14 @@ class Agents {
   Agents copyWith({
     int? id_users,
     String? identifiant_unique,
+    int? solde,
     String? date_enregistrement,
     Users? users,
   }) {
     return Agents(
       id_users: id_users ?? this.id_users,
       identifiant_unique: identifiant_unique ?? this.identifiant_unique,
+      solde: solde ?? this.solde,
       date_enregistrement: date_enregistrement ?? this.date_enregistrement,
       users: users ?? this.users,
     );
@@ -35,6 +39,7 @@ class Agents {
     return <String, dynamic>{
       'id_users': id_users,
       'identifiant_unique': identifiant_unique,
+      'solde': solde,
       'date_enregistrement': date_enregistrement,
       'users': users?.toMap(),
     };
@@ -45,6 +50,7 @@ class Agents {
       id_users: map['id_users'] != null ? map['id_users'] as int : null,
       identifiant_unique:
           map['identifiant_unique'] != null ? map['identifiant_unique'] as String : null,
+      solde: map['solde'] != null ? map['solde'] as int : null,
       date_enregistrement:
           map['date_enregistrement'] != null ? map['date_enregistrement'] as String : null,
       users: map['users'] != null ? Users.fromMap(map['users'] as Map<String, dynamic>) : null,
@@ -58,7 +64,7 @@ class Agents {
 
   @override
   String toString() {
-    return 'Agents(id_users: $id_users, identifiant_unique: $identifiant_unique, date_enregistrement: $date_enregistrement, users: $users)';
+    return 'Agents(id_users: $id_users, identifiant_unique: $identifiant_unique, solde: $solde, date_enregistrement: $date_enregistrement, users: $users)';
   }
 
   @override
@@ -67,6 +73,7 @@ class Agents {
 
     return other.id_users == id_users &&
         other.identifiant_unique == identifiant_unique &&
+        other.solde == solde &&
         other.date_enregistrement == date_enregistrement &&
         other.users == users;
   }
@@ -75,6 +82,7 @@ class Agents {
   int get hashCode {
     return id_users.hashCode ^
         identifiant_unique.hashCode ^
+        solde.hashCode ^
         date_enregistrement.hashCode ^
         users.hashCode;
   }
