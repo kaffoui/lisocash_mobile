@@ -24,6 +24,7 @@ class Preferences {
   static const PREFS_KEY_Notifications = 'TKOKYYMXLD';
   static const PREFS_KEY_Users = '54LKnmJi96';
   static const PREFS_KEY_UsersID = 'n4m9J5KLi6';
+  static const PREFS_KEY_AgentsID = '4HQYR8512D';
 
   bool skipLocal;
 
@@ -61,6 +62,12 @@ class Preferences {
     return data;
   }
 
+  Future<String> getIdAgents() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String data = prefs.getString('$PREFS_KEY_AgentsID') ?? "";
+    return data;
+  }
+
   Future<List<Configuration>> getConfigurationListFromLocal({String? id}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String json = prefs.getString('$PREFS_KEY_Configuration$id') ?? '';
@@ -81,16 +88,16 @@ class Preferences {
     }
   }
 
-  Future<List<Agents>> getAgentsListFromLocal({String? id}) async {
+  Future<List<Agents>> getAgentsListFromLocal({String? id, String? mail, String? password}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String json = prefs.getString('$PREFS_KEY_Agents$id') ?? '';
+    String json = prefs.getString('$PREFS_KEY_Agents$id$mail$password') ?? '';
     if (json.isEmpty || skipLocal) {
-      await Api().getAgents(id: id);
+      await Api().getAgents(id: id, mail: mail, password: password);
     } else {
-      Api().getAgents(id: id);
+      Api().getAgents(id: id, mail: mail, password: password);
     }
     prefs = await SharedPreferences.getInstance();
-    json = prefs.getString('$PREFS_KEY_Agents$id') ?? '';
+    json = prefs.getString('$PREFS_KEY_Agents$id$mail$password') ?? '';
 
     if (json.isEmpty) {
       return [];
@@ -121,8 +128,7 @@ class Preferences {
     }
   }
 
-  Future<List<Operation>> getOperationListFromLocal(
-      {String? id, String? user_id_from, String? user_id_to}) async {
+  Future<List<Operation>> getOperationListFromLocal({String? id, String? user_id_from, String? user_id_to}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String json = prefs.getString('$PREFS_KEY_Operation$id$user_id_from$user_id_to') ?? '';
     if (json.isEmpty || skipLocal) {

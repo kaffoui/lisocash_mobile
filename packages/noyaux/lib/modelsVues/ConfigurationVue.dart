@@ -34,7 +34,7 @@ class _VueConfigurationState extends State<VueConfiguration> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return MouseRegion(
-      cursor: MaterialStateMouseCursor.clickable,
+      cursor: WidgetStateMouseCursor.clickable,
       child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
@@ -129,7 +129,8 @@ class _VueConfigurationState extends State<VueConfiguration> {
                                           children: [
                                             Expanded(
                                               child: NDisplayTextWidget(
-                                                text: "${widget.configuration!.id} --> ${widget.configuration!.id}",
+                                                text:
+                                                    "${widget.configuration!.id} --> ${widget.configuration!.id}",
                                                 maxLines: 1,
                                                 textAlign: TextAlign.left,
                                                 overflow: TextOverflow.ellipsis,
@@ -150,7 +151,9 @@ class _VueConfigurationState extends State<VueConfiguration> {
                                         child: Icon(
                                           Icons.arrow_circle_right,
                                           size: 30,
-                                          color: widget.isSelected! ? theme.colorScheme.primary : Colors.transparent,
+                                          color: widget.isSelected!
+                                              ? theme.colorScheme.primary
+                                              : Colors.transparent,
                                         ),
                                       ),
                                     ),

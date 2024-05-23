@@ -31,7 +31,8 @@ class MyThemeExtension extends ThemeExtension<MyThemeExtension> {
   }
 
   @override
-  ThemeExtension<MyThemeExtension> lerp(covariant ThemeExtension<MyThemeExtension>? other, double t) {
+  ThemeExtension<MyThemeExtension> lerp(
+      covariant ThemeExtension<MyThemeExtension>? other, double t) {
     if (other is! MyThemeExtension) {
       return this;
     }
@@ -51,7 +52,8 @@ class NDropDownWidget extends StatefulWidget {
   final bool isObject, isDense, canSearch, canMultiSelected, isRequired;
   final Widget Function(dynamic value)? buildItem;
   final void Function(dynamic value)? onChangedDropDownValue;
-  final String? title;
+  final String? title, subtitle;
+  final FontWeight? titleWeight;
   final double? radius;
 
   NDropDownWidget({
@@ -63,6 +65,8 @@ class NDropDownWidget extends StatefulWidget {
     this.onChangedDropDownValue,
     this.backColor,
     this.titleColor,
+    this.subtitle,
+    this.titleWeight,
     this.isObject = false,
     this.isDense = true,
     this.isRequired = false,
@@ -81,8 +85,11 @@ class NDropDownWidget extends StatefulWidget {
 class _NDropDownWidgetState extends State<NDropDownWidget> {
   @override
   Widget build(BuildContext context) {
-    widget.initialObject = widget.listObjet.contains(widget.initialObject) ? widget.initialObject : widget.listObjet[0];
-    final MyThemeExtension theme = Theme.of(context).extension<MyThemeExtension>() ?? MyThemeExtension();
+    widget.initialObject = widget.listObjet.contains(widget.initialObject)
+        ? widget.initialObject
+        : widget.listObjet[0];
+    final MyThemeExtension theme =
+        Theme.of(context).extension<MyThemeExtension>() ?? MyThemeExtension();
     return Container(
       margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Column(
@@ -98,9 +105,13 @@ class _NDropDownWidgetState extends State<NDropDownWidget> {
                             text: TextSpan(
                               text:
                                   "${widget.title!.substring(0, 1).toUpperCase()}${widget.title!.replaceFirst(widget.title!.substring(0, 1), "").replaceAll("_", " ").toLowerCase()}",
-                              style: renderTextStyle(context: context, theme: BASE_TEXT_THEME.LABEL_MEDIUM),
+                              style: renderTextStyle(
+                                  context: context, theme: BASE_TEXT_THEME.LABEL_MEDIUM),
                               children: const <TextSpan>[
-                                TextSpan(text: '*', style: TextStyle(fontWeight: FontWeight.w400, color: Colors.red)),
+                                TextSpan(
+                                    text: '*',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w400, color: Colors.red)),
                               ],
                             ),
                           )
@@ -108,8 +119,25 @@ class _NDropDownWidgetState extends State<NDropDownWidget> {
                             text:
                                 "${widget.title!.substring(0, 1).toUpperCase()}${widget.title!.replaceFirst(widget.title!.substring(0, 1), "").replaceAll("_", " ").toLowerCase()}",
                             theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                            fontWeight: widget.titleWeight,
                             textColor: widget.titleColor,
                           ),
+                  ),
+                ),
+              ],
+            ),
+          if (widget.subtitle != null)
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 8, right: 16, top: 12),
+                    child: NDisplayTextWidget(
+                      text:
+                          "${widget.subtitle!.substring(0, 1).toUpperCase()}${widget.subtitle!.replaceFirst(widget.subtitle!.substring(0, 1), "").replaceAll("_", " ").toLowerCase()}",
+                      theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                      textColor: widget.titleColor,
+                    ),
                   ),
                 ),
               ],
@@ -140,9 +168,13 @@ class _NDropDownWidgetState extends State<NDropDownWidget> {
                               ? IgnorePointer(child: widget.buildItem!(itemObject))
                               : widget.isObject
                                   ? NDisplayTextWidget(
-                                      text: "${itemObject.nom}", maxLines: 1, overflow: TextOverflow.ellipsis)
+                                      text: "${itemObject.nom}",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis)
                                   : NDisplayTextWidget(
-                                      text: " $itemObject", maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      text: " $itemObject",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis),
                         ),
                       )
                       .toList(),

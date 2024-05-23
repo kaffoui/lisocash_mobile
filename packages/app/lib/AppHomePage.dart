@@ -1,17 +1,14 @@
 import 'package:app/AppAcceuilPage.dart';
 import 'package:app/AppNotificationPage.dart';
 import 'package:app/AppStatsPage.dart';
-import 'package:app/agents/AppAgentsHomePage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:noyaux/constants/constants.dart';
 import 'package:noyaux/constants/fonctions.dart';
 import 'package:noyaux/constants/styles.dart';
 import 'package:noyaux/models/Notifications.dart';
-import 'package:noyaux/models/Pays.dart';
 import 'package:noyaux/models/Users.dart';
 import 'package:noyaux/modelsDetails/UsersDetailsPage.dart';
 import 'package:noyaux/modelsLists/OperationListWidget.dart';
@@ -20,7 +17,6 @@ import 'package:noyaux/services/api/Api.dart';
 import 'package:noyaux/services/firebase_services.dart';
 import 'package:noyaux/services/url.dart';
 import 'package:noyaux/widgets/N_DisplayImageWidget.dart';
-import 'package:noyaux/widgets/N_DisplayTextWidget.dart';
 import 'package:noyaux/widgets/N_MenuWidget.dart';
 
 class AppHomePage extends StatefulWidget {
@@ -34,11 +30,7 @@ class AppHomePage extends StatefulWidget {
 }
 
 class _AppHomePageState extends State<AppHomePage> {
-  int? currentIndex;
-  int? currentSecondIndex;
-  int? currentThirdIndex;
-
-  Pays? _currentPaysUser;
+  int currentIndex = 0;
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -50,77 +42,58 @@ class _AppHomePageState extends State<AppHomePage> {
 
   double value = 0.0;
 
-  Color backgroundColor = Constants.kPrimaryColor;
-
-  bool showBadge = false;
+  bool showBadge = false, isMenuOpen = false;
 
   List<DrawerItem> listItems = [];
-  List<DrawerItem> listSecondItems = [];
-  List<DrawerItem> listThirdItems = [];
-
-  void getPays() async {
-    _currentPaysUser = await Fonctions().getPaysFromIp();
-    setState(() {});
-  }
 
   void setItems() {
     setState(() {
-      listItems.addAll([
-        DrawerItem(
-          iconData: MdiIcons.home,
-          name: "Accueil",
-          page: AppAcceuilPage(),
-          visible: true,
-        ),
-        DrawerItem(
-          iconData: Icons.stacked_bar_chart,
-          name: "Statistiques",
-          page: AppStatsPage(),
-          visible: true,
-        ),
-        DrawerItem(
-          iconData: Icons.notifications,
-          name: "Notifications",
-          page: AppNotificationPage(user_id: widget.users.id.toString()),
-          visible: true,
-        ),
-        DrawerItem(
-          iconData: MdiIcons.transfer,
-          name: "Validations",
-          page: OperationListWidget(
-            user_id: widget.users.id.toString(),
-            showAsGrid: true,
-            showItemAsCard: true,
-            showValidation: true,
-            message_error: "Vous n'avez aucune validation aujourd'hui !",
+      listItems.addAll(
+        [
+          DrawerItem(
+            iconData: MdiIcons.home,
+            name: "Accueil",
+            page: AppAcceuilPage(),
+            visible: true,
           ),
-          visible: true,
-        ),
-        DrawerItem(
-          iconData: MdiIcons.faceAgent,
-          name: "Mon Compte Agent",
-          page: AppAgentsHomePage(),
-          visible: true,
-        ),
-      ]);
-
-      listSecondItems.addAll([
-        DrawerItem(
-          iconData: MdiIcons.faceManProfile,
-          name: "Profil",
-          page: UsersDetailsPage(users: widget.users),
-          visible: true,
-        ),
-      ]);
-
-      listThirdItems.addAll([
-        DrawerItem(
-          iconData: MdiIcons.alertBoxOutline,
-          name: "À propos de nous",
-          page: UsersDetailsPage(users: widget.users),
-          visible: true,
-        ),
-      ]);
+          DrawerItem(
+            iconData: Icons.stacked_bar_chart,
+            name: "Statistiques",
+            page: AppStatsPage(),
+            visible: true,
+          ),
+          DrawerItem(
+            iconData: Icons.notifications,
+            name: "Notifications",
+            page: AppNotificationPage(user_id: widget.users.id.toString()),
+            visible: true,
+          ),
+          DrawerItem(
+            iconData: MdiIcons.transfer,
+            name: "Validations",
+            page: OperationListWidget(
+              user_id: widget.users.id.toString(),
+              showAsGrid: true,
+              showItemAsCard: true,
+              showValidation: true,
+              message_error: "Vous n'avez aucune validation aujourd'hui !",
+            ),
+            visible: true,
+          ),
+          DrawerItem(
+            iconData: MdiIcons.faceManProfile,
+            name: "Profil",
+            page: UsersDetailsPage(users: widget.users),
+            visible: true,
+          ),
+          DrawerItem(
+            iconData: MdiIcons.alertBoxOutline,
+            name: "À propos de nous",
+            page: UsersDetailsPage(users: widget.users),
+            visible: true,
+          ),
+        ],
+      );
     });
   }
 
@@ -270,7 +243,6 @@ class _AppHomePageState extends State<AppHomePage> {
     currentIndex = widget.currentIndex;
 
     super.initState();
-    getPays();
     configureNotification();
     sendToken();
   }
@@ -279,187 +251,139 @@ class _AppHomePageState extends State<AppHomePage> {
   Widget build(BuildContext context) {
     theme = Theme.of(context);
     return Scaffold(
-      body: Container(
-        width: 280,
-        color: backgroundColor,
-        child: SafeArea(
-          child: Column(
-            children: <Widget>[
-              ListTile(
-                leading: CircleAvatar(
-                  radius: 25.0,
-                  backgroundColor: Colors.white54,
-                  child: NDisplayImageWidget(
-                    imageLink:
-                        "https://${Url.urlServer}/${Url.urlImageBase}/${widget.users.lien_pp}",
-                    showDefaultImage: true,
-                    isRounded: true,
-                    isUserProfile: true,
-                  ),
-                ),
-                title: NDisplayTextWidget(
-                  text: "${widget.users.nom} ${widget.users.prenom}",
-                  theme: BASE_TEXT_THEME.TITLE_SMALL,
-                  textColor: Colors.white,
-                ),
-                subtitle: NDisplayTextWidget(
-                  text:
-                      "${widget.users.pays?.nom}${_currentPaysUser != null && _currentPaysUser != widget.users.pays ? "|" : ""}${_currentPaysUser != null && _currentPaysUser != widget.users.pays ? _currentPaysUser?.nom : ""}",
-                  theme: BASE_TEXT_THEME.LABEL_MEDIUM,
-                  textColor: Colors.white,
-                ),
-              ),
-              Divider(),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "Actions",
-                      style: Style.defaultTextStyle(
-                        textSize: 12.0,
-                        textColor: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ...listItems.map(
-                (items) => ListTile(
-                  onTap: () {
-                    setState(() {
-                      currentIndex = listItems.indexOf(items);
-                      currentSecondIndex = null;
-                      currentThirdIndex = null;
-                      if (currentIndex == 4) {
-                        setState(() {
-                          backgroundColor = theme.colorScheme.secondary;
-                        });
-                      } else {
-                        setState(() {
-                          backgroundColor = theme.primaryColor;
-                        });
-                      }
-                    });
-                  },
-                  leading: Icon(
-                    items.iconData,
-                    size: 30.0,
-                    color: currentIndex == listItems.indexOf(items)
-                        ? Colors.white
-                        : Colors.black.withOpacity(.5),
-                  ),
-                  title: Text(
-                    "${items.name}",
-                    style: Style.defaultTextStyle(
-                      textColor: currentIndex == listItems.indexOf(items)
-                          ? Colors.white
-                          : Colors.black.withOpacity(.5),
-                      textSize: currentIndex == listItems.indexOf(items) ? 14.0 : 12.0,
-                      textWeight: currentIndex == listItems.indexOf(items)
-                          ? FontWeight.w700
-                          : FontWeight.w100,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          SafeArea(
+            child: Container(
+              width: 250.0,
+              padding: EdgeInsets.all(8.0),
+              color: theme.primaryColor,
+              child: Column(
+                children: [
+                  DrawerHeader(
+                    child: Row(
+                      children: [
+                        Container(
+                          clipBehavior: Clip.hardEdge,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(
+                                24.0,
+                              ),
+                            ),
+                          ),
+                          child: NDisplayImageWidget(
+                            imageLink: "assets/images/logo_3.png",
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "Profil",
-                      style: Style.defaultTextStyle(
-                        textSize: 12.0,
-                        textColor: Colors.white,
-                      ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ...listItems
+                            .map(
+                              (e) => Stack(
+                                children: [
+                                  AnimatedPositioned(
+                                    curve: Curves.easeIn,
+                                    child: Container(
+                                      margin: EdgeInsets.only(left: 12.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(12.0),
+                                          bottomLeft: Radius.circular(12.0),
+                                        ),
+                                      ),
+                                    ),
+                                    height: 56,
+                                    width: currentIndex == listItems.indexOf(e) ? 250 : 0,
+                                    duration: Duration(
+                                      milliseconds: 300,
+                                    ),
+                                  ),
+                                  ListTile(
+                                    onTap: () {
+                                      setState(() {
+                                        currentIndex = listItems.indexOf(e);
+                                        value = 0;
+                                      });
+                                    },
+                                    leading: Icon(
+                                      e.iconData,
+                                      color: currentIndex == listItems.indexOf(e)
+                                          ? theme.primaryColor
+                                          : Colors.black.withOpacity(.5),
+                                    ),
+                                    title: Text(
+                                      "${e.name}",
+                                      style: Style.defaultTextStyle(
+                                        textColor: currentIndex == listItems.indexOf(e)
+                                            ? theme.primaryColor
+                                            : Colors.black.withOpacity(.5),
+                                        textSize:
+                                            currentIndex == listItems.indexOf(e) ? 14.0 : 12.0,
+                                        textWeight: currentIndex == listItems.indexOf(e)
+                                            ? FontWeight.w700
+                                            : FontWeight.w100,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                            .toList()
+                      ],
                     ),
-                  ],
-                ),
+                  )
+                ],
               ),
-              ...listSecondItems.map(
-                (items) => ListTile(
-                  onTap: () {
-                    setState(() {
-                      currentSecondIndex = listSecondItems.indexOf(items);
-                      currentIndex = null;
-                      setState(() {
-                        backgroundColor = theme.primaryColor;
-                      });
-                      currentThirdIndex = null;
-                    });
-                  },
-                  leading: Icon(
-                    items.iconData,
-                    size: 30.0,
-                    color: currentSecondIndex == listSecondItems.indexOf(items)
-                        ? Colors.white
-                        : Colors.black.withOpacity(.5),
-                  ),
-                  title: Text(
-                    "${items.name}",
-                    style: Style.defaultTextStyle(
-                      textColor: currentSecondIndex == listSecondItems.indexOf(items)
-                          ? Colors.white
-                          : Colors.black.withOpacity(.5),
-                      textSize: currentSecondIndex == listSecondItems.indexOf(items) ? 14.0 : 12.0,
-                      textWeight: currentSecondIndex == listSecondItems.indexOf(items)
-                          ? FontWeight.w700
-                          : FontWeight.w100,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "Application",
-                      style: Style.defaultTextStyle(
-                        textSize: 12.0,
-                        textColor: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ...listThirdItems.map(
-                (items) => ListTile(
-                  onTap: () {
-                    setState(() {
-                      currentThirdIndex = listThirdItems.indexOf(items);
-                      currentIndex = null;
-                      setState(() {
-                        backgroundColor = theme.primaryColor;
-                      });
-                      currentSecondIndex = null;
-                    });
-                  },
-                  leading: Icon(
-                    items.iconData,
-                    size: 30.0,
-                    color: currentThirdIndex == listThirdItems.indexOf(items)
-                        ? Colors.white
-                        : Colors.black.withOpacity(.5),
-                  ),
-                  title: Text(
-                    "${items.name}",
-                    style: Style.defaultTextStyle(
-                      textColor: currentThirdIndex == listThirdItems.indexOf(items)
-                          ? Colors.white
-                          : Colors.black.withOpacity(.5),
-                      textSize: currentThirdIndex == listThirdItems.indexOf(items) ? 14.0 : 12.0,
-                      textWeight: currentThirdIndex == listThirdItems.indexOf(items)
-                          ? FontWeight.w700
-                          : FontWeight.w100,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          TweenAnimationBuilder(
+            tween: Tween<double>(begin: 0, end: value),
+            duration: Duration(milliseconds: 500),
+            builder: (_, val, __) {
+              return (Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, .001)
+                  ..setEntry(0, 3, 200 * val),
+                child: Scaffold(
+                  appBar: Fonctions().defaultAppBar(
+                    context: context,
+                    elevation: 0.0,
+                    centerTitle: true,
+                    leadingWidget: IconButton(
+                      icon: Icon(
+                        value == 0 ? Icons.menu : Icons.close,
+                        size: 20.0,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          value == 0 ? value = 1 : value = 0;
+                        });
+                      },
+                    ),
+                    titleWidget: Text(
+                      "${listItems[currentIndex].name}",
+                      style: Style.defaultTextStyle(
+                        textSize: 18.0,
+                        textWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  body: listItems[currentIndex].page,
+                ),
+              ));
+            },
+          ),
+        ],
       ),
     );
   }

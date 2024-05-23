@@ -16,7 +16,17 @@ class NTextInputWidget extends StatefulWidget {
   GlobalKey<FormFieldState>? validationKey;
   BASE_TEXT_THEME textTheme;
   Color? textColor;
-  String? hint, hintLabel, title, valueType, value, codeTelephonique, codePays, suffixText, tooltip, selectedPays;
+  String? hint,
+      hintLabel,
+      title,
+      valueType,
+      value,
+      codeTelephonique,
+      codePays,
+      suffixText,
+      tooltip,
+      selectedPays,
+      subtitle;
   Widget? leftWidget, rightWidget;
   IconData? leftIcon, rightIcon;
   int? maxLength, minLength, minLines, maxLines;
@@ -72,6 +82,7 @@ class NTextInputWidget extends StatefulWidget {
       onLostFocus;
   void Function()? onTap;
   String? Function(String value)? onValidated;
+  FontWeight? titleWeight;
 
   TextInputAction? textInputAction;
 
@@ -89,7 +100,9 @@ class NTextInputWidget extends StatefulWidget {
     this.rightIcon,
     this.leftWidget,
     this.rightWidget,
+    this.subtitle,
     this.codePays = 'BJ',
+    this.titleWeight,
     this.titleColor,
     this.initialTagSelectedList,
     this.codeTelephonique = '+229',
@@ -276,9 +289,16 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                             text: TextSpan(
                               text:
                                   "${widget.title!.substring(0, 1).toUpperCase()}${widget.title!.replaceFirst(widget.title!.substring(0, 1), "").replaceAll("_", " ").toLowerCase()}",
-                              style: renderTextStyle(context: context, theme: BASE_TEXT_THEME.LABEL_MEDIUM),
+                              style: renderTextStyle(
+                                context: context,
+                                theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                                fontWeight: widget.titleWeight,
+                              ),
                               children: const <TextSpan>[
-                                TextSpan(text: '*', style: TextStyle(fontWeight: FontWeight.w400, color: Colors.red)),
+                                TextSpan(
+                                    text: '*',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w400, color: Colors.red)),
                               ],
                             ),
                           )
@@ -287,19 +307,26 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                 "${widget.title!.substring(0, 1).toUpperCase()}${widget.title!.replaceFirst(widget.title!.substring(0, 1), "").replaceAll("_", " ").toLowerCase()}",
                             theme: BASE_TEXT_THEME.LABEL_MEDIUM,
                             textColor: widget.titleColor,
+                            fontWeight: widget.titleWeight,
                           ),
                   ),
                 ),
-              /*Expanded(
+            ],
+          ),
+        if (widget.subtitle != null)
+          Row(
+            children: [
+              Expanded(
                 child: Container(
                   padding: const EdgeInsets.only(left: 8, right: 16, top: 12),
                   child: NDisplayTextWidget(
                     text:
-                        "${widget.title!.substring(0, 1).toUpperCase()}${widget.title!.replaceFirst(widget.title!.substring(0, 1), "").replaceAll("_", " ").toLowerCase()}",
+                        "${widget.subtitle!.substring(0, 1).toUpperCase()}${widget.subtitle!.replaceFirst(widget.subtitle!.substring(0, 1), "").replaceAll("_", " ").toLowerCase()}",
                     theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                    textColor: widget.titleColor,
                   ),
                 ),
-              ),*/
+              ),
             ],
           ),
         Tooltip(
@@ -321,8 +348,9 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                   : BorderRadius.circular(widget.radius ?? 90),
               border: errorMessage.isNotEmpty
                   ? Border.all(
-                      color:
-                          errorMessage.isNotEmpty ? theme.colorScheme.error : widget.borderColor ?? Colors.transparent,
+                      color: errorMessage.isNotEmpty
+                          ? theme.colorScheme.error
+                          : widget.borderColor ?? Colors.transparent,
                       width: 0.2)
                   : widget.border ?? Border.all(color: Colors.black, width: 0.3),
             ),
@@ -363,8 +391,10 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                             ? Row(
                                 children: [
                                   Container(
-                                    margin: widget.margin ?? EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    padding: widget.padding ?? EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                    margin: widget.margin ??
+                                        EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: widget.padding ??
+                                        EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                                     child: widget.isTelephone == true
                                         ? CountryCodePicker(
                                             padding: EdgeInsets.zero,
@@ -376,7 +406,8 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                             initialSelection: widget.selectedPays ?? "+229",
                                             favorite: const ['+229', '+226', '+228', '+33'],
                                             onInit: (CountryCode? countryCode) {
-                                              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback((timeStamp) {
                                                 if (widget.getSelectedPays != null) {
                                                   widget.getSelectedPays!(countryCode!.name!);
                                                 }
@@ -423,7 +454,8 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                         }
                                       },
                                       child: TextFormField(
-                                        autofocus: (widget.focusNode != null && widget.focusNode!.hasFocus),
+                                        autofocus: (widget.focusNode != null &&
+                                            widget.focusNode!.hasFocus),
                                         focusNode: focusNode,
                                         controller: widget.textController,
                                         cursorColor: Colors.black,
@@ -437,7 +469,8 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                           theme: widget.textTheme,
                                         ),
                                         minLines: widget.minLines ?? (widget.isMultiline! ? 5 : 1),
-                                        maxLines: widget.maxLines ?? (widget.isMultiline! ? (widget.maxLines) : 1),
+                                        maxLines: widget.maxLines ??
+                                            (widget.isMultiline! ? (widget.maxLines) : 1),
                                         maxLength: widget.maxLength,
                                         textInputAction: widget.textInputAction,
                                         onFieldSubmitted: (value) {
@@ -466,7 +499,8 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                               ]
                                             : widget.isNumeric == true || widget.isPrice == true
                                                 ? <TextInputFormatter>[
-                                                    FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)')),
+                                                    FilteringTextInputFormatter.allow(
+                                                        RegExp(r'(^\d*\.?\d*)')),
                                                   ]
                                                 : null,
                                         keyboardType: widget.isEmail!
@@ -487,20 +521,24 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                         },
                                         decoration: InputDecoration(
                                           enabledBorder: UnderlineInputBorder(
-                                            borderSide:
-                                                widget.showUnderline! ? BorderSide(width: 1.5) : BorderSide.none,
+                                            borderSide: widget.showUnderline!
+                                                ? BorderSide(width: 1.5)
+                                                : BorderSide.none,
                                           ),
                                           focusedBorder: UnderlineInputBorder(
-                                            borderSide:
-                                                widget.showUnderline! ? BorderSide(width: 1.5) : BorderSide.none,
+                                            borderSide: widget.showUnderline!
+                                                ? BorderSide(width: 1.5)
+                                                : BorderSide.none,
                                           ),
                                           border: UnderlineInputBorder(
-                                            borderSide:
-                                                widget.showUnderline! ? BorderSide(width: 1.5) : BorderSide.none,
+                                            borderSide: widget.showUnderline!
+                                                ? BorderSide(width: 1.5)
+                                                : BorderSide.none,
                                           ),
                                           fillColor: Colors.transparent,
-                                          contentPadding:
-                                              widget.showUnderline! ? EdgeInsets.symmetric(vertical: 2.0) : null,
+                                          contentPadding: widget.showUnderline!
+                                              ? EdgeInsets.symmetric(vertical: 2.0)
+                                              : null,
                                           isDense: true,
                                           errorStyle: renderTextStyle(
                                             context: context,
@@ -520,12 +558,14 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                           labelStyle: renderTextStyle(
                                             context: context,
                                             theme: BASE_TEXT_THEME.LABEL_SMALL,
-                                            textColor: widget.hintLabelColor ?? Colors.black.withOpacity(0.3),
+                                            textColor: widget.hintLabelColor ??
+                                                Colors.black.withOpacity(0.3),
                                           ),
                                           hintStyle: renderTextStyle(
                                             context: context,
                                             theme: BASE_TEXT_THEME.LABEL_SMALL,
-                                            textColor: widget.hintColor ?? Colors.black.withOpacity(0.3),
+                                            textColor:
+                                                widget.hintColor ?? Colors.black.withOpacity(0.3),
                                           ),
                                           suffixText: widget.isPrice! ? "F CFA" : widget.suffixText,
                                         ),
@@ -539,28 +579,33 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                                   value!.isEmpty &&
                                                   widget.textController!.text.isEmpty) {
                                                 setState(() {
-                                                  errorMessage = "Cette information est requise et ne peut"
+                                                  errorMessage =
+                                                      "Cette information est requise et ne peut"
                                                       " pas être vide";
                                                 });
-                                              } else if (widget.isEmail! && !EmailValidator.validate(value!)) {
+                                              } else if (widget.isEmail! &&
+                                                  !EmailValidator.validate(value!)) {
                                                 setState(() {
                                                   errorMessage = "Le mail n'est pas valide";
                                                 });
                                               } else if (widget.isPassword! && value!.length < 6) {
                                                 setState(() {
-                                                  errorMessage = "Le mot de passe doit contenir au moins "
+                                                  errorMessage =
+                                                      "Le mot de passe doit contenir au moins "
                                                       "6 caractères";
                                                 });
                                               } else if (widget.isTelephone!) {
                                                 try {
-                                                  int.parse(widget.textController!.text.replaceAll(" ", ""));
+                                                  int.parse(widget.textController!.text
+                                                      .replaceAll(" ", ""));
                                                   setState(() {
                                                     errorMessage = '';
                                                   });
                                                 } catch (e) {
                                                   if (widget.isRequired!) {
                                                     setState(() {
-                                                      errorMessage = "Le numéro de téléphone n'est pas valide";
+                                                      errorMessage =
+                                                          "Le numéro de téléphone n'est pas valide";
                                                     });
                                                   } else {
                                                     setState(() {
@@ -573,7 +618,8 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                                 setState(() {
                                                   errorMessage = "Veuillez choisir une date valide";
                                                 });
-                                              } else if (widget.minLength! > 0 && value!.length < widget.maxLength!) {
+                                              } else if (widget.minLength! > 0 &&
+                                                  value!.length < widget.maxLength!) {
                                                 setState(() {
                                                   errorMessage = "Soyez plus précis";
                                                 });
@@ -632,7 +678,9 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                       padding: EdgeInsets.symmetric(horizontal: 8),
                                       child: widget.isPassword == true
                                           ? Icon(
-                                              mayObscureText ? Icons.lock_outline_rounded : Icons.lock_open_rounded,
+                                              mayObscureText
+                                                  ? Icons.lock_outline_rounded
+                                                  : Icons.lock_open_rounded,
                                               color: Colors.black45,
                                             )
                                           : widget.isHeure!
@@ -667,12 +715,15 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                           children: selectedTagList
                                               .map((e) => e.isNotEmpty
                                                   ? Container(
-                                                      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                                      margin: const EdgeInsets.symmetric(
+                                                          horizontal: 4, vertical: 2),
                                                       decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.all(Radius.circular(90)),
-                                                        color: theme.colorScheme.background,
+                                                        borderRadius:
+                                                            BorderRadius.all(Radius.circular(90)),
+                                                        color: theme.colorScheme.surface,
                                                       ),
-                                                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                                                      padding:
+                                                          const EdgeInsets.symmetric(horizontal: 4),
                                                       child: Row(
                                                         mainAxisSize: MainAxisSize.min,
                                                         children: [
@@ -686,17 +737,19 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                                                 suggestionsList.add(e);
                                                                 selectedTagList.remove(e);
                                                                 if (widget.textController != null) {
-                                                                  widget.textController!.text = widget
-                                                                      .textController!.text
-                                                                      .replaceAll("$e~|~", "");
+                                                                  widget.textController!.text =
+                                                                      widget.textController!.text
+                                                                          .replaceAll("$e~|~", "");
                                                                 }
                                                                 if (widget.onChanged != null) {
-                                                                  widget.onChanged!(selectedTagList.join("~|~"));
+                                                                  widget.onChanged!(
+                                                                      selectedTagList.join("~|~"));
                                                                 }
                                                               });
                                                             },
                                                             child: Container(
-                                                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                              padding: const EdgeInsets.symmetric(
+                                                                  horizontal: 8),
                                                               child: Icon(
                                                                 Icons.close,
                                                                 color: theme.colorScheme.error,
@@ -798,8 +851,8 @@ class _NTextInputWidgetState extends State<NTextInputWidget> {
                                               ? suggestionsList
                                                   .where((element) => Fonctions()
                                                       .removeAccents(element.toLowerCase().trim())
-                                                      .contains(
-                                                          Fonctions().removeAccents(pattern.toLowerCase().trim())))
+                                                      .contains(Fonctions().removeAccents(
+                                                          pattern.toLowerCase().trim())))
                                                   .toList()
                                               : [];
                                         },

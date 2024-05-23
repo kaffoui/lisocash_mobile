@@ -36,7 +36,7 @@ class _VueUsersState extends State<VueUsers> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return MouseRegion(
-      cursor: MaterialStateMouseCursor.clickable,
+      cursor: WidgetStateMouseCursor.clickable,
       child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
@@ -91,7 +91,8 @@ class _VueUsersState extends State<VueUsers> {
                                                 children: [
                                                   Expanded(
                                                     child: NDisplayTextWidget(
-                                                      text: "${widget.users!.nom} ${widget.users!.prenom}",
+                                                      text:
+                                                          "${widget.users!.nom} ${widget.users!.prenom}",
                                                       maxLines: 1,
                                                       textAlign: TextAlign.left,
                                                       overflow: TextOverflow.ellipsis,
@@ -133,7 +134,8 @@ class _VueUsersState extends State<VueUsers> {
                                           children: [
                                             Expanded(
                                               child: NDisplayTextWidget(
-                                                text: "${widget.users!.code_telephone} ${widget.users!.telephone}",
+                                                text:
+                                                    "${widget.users!.code_telephone} ${widget.users!.telephone}",
                                                 maxLines: 1,
                                                 textAlign: TextAlign.left,
                                                 overflow: TextOverflow.ellipsis,
@@ -154,7 +156,9 @@ class _VueUsersState extends State<VueUsers> {
                                         child: Icon(
                                           Icons.arrow_circle_right,
                                           size: 30,
-                                          color: widget.isSelected! ? theme.colorScheme.primary : Colors.transparent,
+                                          color: widget.isSelected!
+                                              ? theme.colorScheme.primary
+                                              : Colors.transparent,
                                         ),
                                       ),
                                     ),
@@ -194,12 +198,15 @@ class _VueUsersState extends State<VueUsers> {
                                         "${widget.users!.nom} ${widget.users!.prenom}",
                                         style: Style.defaultTextStyle(
                                           textSize: 12.0,
-                                          textColor: widget.users!.isVerifier ? Colors.green : Colors.red,
+                                          textColor:
+                                              widget.users!.isVerifier ? Colors.green : Colors.red,
                                         ),
                                       ),
                                       SizedBox(width: 5.0),
                                       Icon(
-                                        widget.users!.isVerifier ? Icons.check_circle_outline_outlined : Icons.close,
+                                        widget.users!.isVerifier
+                                            ? Icons.check_circle_outline_outlined
+                                            : Icons.close,
                                         color: widget.users!.isVerifier ? Colors.green : Colors.red,
                                       )
                                     ],

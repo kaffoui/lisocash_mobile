@@ -28,7 +28,9 @@ class NInfosContactWidget extends StatelessWidget {
               if (onPressed != null) onPressed!();
             },
             child: MouseRegion(
-              cursor: onPressed != null ? MaterialStateMouseCursor.clickable : MaterialStateMouseCursor.textable,
+              cursor: onPressed != null
+                  ? WidgetStateMouseCursor.clickable
+                  : WidgetStateMouseCursor.textable,
               child: Container(
                 padding: EdgeInsets.all(8),
                 child: Row(

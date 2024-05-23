@@ -117,7 +117,7 @@ class NCardServiceIcons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      cursor: MaterialStateMouseCursor.clickable,
+      cursor: WidgetStateMouseCursor.clickable,
       child: GestureDetector(
         onTap: action,
         child: Container(

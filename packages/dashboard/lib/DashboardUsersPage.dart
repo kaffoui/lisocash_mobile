@@ -89,6 +89,7 @@ class _DashboardUsersPagesState extends State<DashboardUsersPages> {
 
   Widget _UsersListBloc({Key? key, bool showAsGrid = false, Function(Users users)? onItemPressed}) {
     return UsersListWidget(
+      key: key,
       showItemAsCard: false,
       canEditItem: false,
       canAddItem: false,

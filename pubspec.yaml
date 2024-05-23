@@ -15,6 +15,9 @@ dependencies:
   app:
     path: packages/app
 
+  dashboard_agents:
+    path: packages/dashboard_agents
+
   dashboard:
     path: packages/dashboard
 

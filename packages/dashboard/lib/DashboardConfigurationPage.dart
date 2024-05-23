@@ -77,6 +77,7 @@ class _DashboardConfigurationPagesState extends State<DashboardConfigurationPage
   Widget _ConfigurationListBloc(
       {Key? key, bool showAsGrid = false, Function(Configuration configuration)? onItemPressed}) {
     return ConfigurationListWidget(
+      key: key,
       showItemAsCard: false,
       canEditItem: true,
       canAddItem: true,

@@ -1,7 +1,5 @@
-name: noyaux
-
+name: dashboard_agents
 description: "A new Flutter package project."
-
 version: 0.0.1
 
 homepage: https://lisocash.com
@@ -9,50 +7,16 @@ homepage: https://lisocash.com
 publish_to: none
 
 environment:
-  sdk: '>=3.2.6 <4.0.0'
+  sdk: '>=3.3.4 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  flutter_localizations:
-    sdk: flutter
 
-  app:
-    path: ../app
-
-  dashboard:
-    path: ../dashboard
-
-  dashboard_agents:
-    path: ../dashboard_agents
-
-  http: ^1.1.2
-  share_plus: ^7.0.2
-  flutter_spinkit: ^5.1.0
-  get_ip_address: ^0.0.5
-  country_ip: ^3.0.0
-  cached_network_image: ^3.2.3
-  material_design_icons_flutter: ^7.0.7296
-  firebase_core: ^2.6.1
-  firebase_messaging: ^14.2.4
-  image_picker: ^1.0.0
-  shared_preferences: ^2.0.7
-  permission_handler: ^11.1.0
-  flutter_rounded_date_picker: ^3.0.2
-  country_code_picker: ^3.0.0
-  file_picker: ^6.1.1
-  photo_view: ^0.14.0
-  email_validator: ^2.0.1
-  flutter_typeahead: ^5.0.1
-  url_launcher: ^6.0.10
-  flutter_local_notifications: ^17.0.0
-  qr_flutter: ^4.1.0
-  qr_code_scanner: ^1.0.1
-  fl_chart: ^0.66.1
-  flutter_stripe: ^10.0.0
-  google_fonts: ^6.2.1
+  noyaux:
+    path: ../noyaux
 
 dev_dependencies:
   flutter_test:

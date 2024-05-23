@@ -1,9 +1,5 @@
-import 'package:app/AppErrorCritiquePage.dart';
-import 'package:app/AppHomePage.dart';
-import 'package:app/AppLoginPage.dart';
-import 'package:dashboard/DashboardHomePage.dart';
-import 'package:dashboard/DashboardLoginPage.dart';
-import 'package:flutter/foundation.dart';
+import 'package:dashboard_agents/DashboardAgentsHomePage.dart';
+import 'package:dashboard_agents/DashboardAgentsLoginPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get_ip_address/get_ip_address.dart';
 
@@ -15,29 +11,29 @@ import '../widgets/N_DisplayImageWidget.dart';
 import '../widgets/N_LoadingWidget.dart';
 import 'components/MyBodyPage.dart';
 
-class SplashScreenPage extends StatefulWidget {
-  const SplashScreenPage({super.key});
+class SplashScreenAgentsPage extends StatefulWidget {
+  const SplashScreenAgentsPage({super.key});
 
   @override
-  State<SplashScreenPage> createState() => _SplashScreenPageState();
+  State<SplashScreenAgentsPage> createState() => _SplashScreenAgentsPageState();
 }
 
-class _SplashScreenPageState extends State<SplashScreenPage> {
+class _SplashScreenAgentsPageState extends State<SplashScreenAgentsPage> {
   bool getusers = false;
 
-  void checkUsers() async {
-    String id = await Preferences().getIdUsers();
+  void checkAgents() async {
+    String id = await Preferences().getIdAgents();
 
     if (id.isNotEmpty) {
-      final data = await Preferences().getUsersListFromLocal(id: id);
+      final data = await Preferences().getAgentsListFromLocal(id: id);
 
       if (data.isNotEmpty) {
         IpAddress ipAddress = IpAddress(type: RequestType.json);
 
         final ip = await ipAddress.getIpAddress();
 
-        final users = data.first;
-        users.ip_adresse = ip["ip"];
+        final agents = data.first;
+        agents.ip_adresse = ip["ip"];
 
         /*final pays = await Fonctions().getPaysFromIp();
 
@@ -49,22 +45,14 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
           "action": "SAVE",
         };
 
-        await Api.saveObjetApi(arguments: users, url: Url.UsersUrl, additionalArgument: paramsSup)
-            .then(
+        await Api.saveObjetApi(arguments: agents, url: Url.AgentsUrl, additionalArgument: paramsSup).then(
           (value) {
             if (value["saved"] == true) {
-              Preferences.removeData(key: "${Preferences.PREFS_KEY_UsersID}");
-              Preferences.saveData(
-                  key: "${Preferences.PREFS_KEY_UsersID}", data: value["inserted_id"]);
+              Preferences.removeData(key: "${Preferences.PREFS_KEY_AgentsID}");
+              Preferences.saveData(key: "${Preferences.PREFS_KEY_AgentsID}", data: value["inserted_id"]);
               Fonctions().openPageToGo(
                 context: context,
-                pageToGo: (users.isAdmin || users.isSuperAdmin) && kIsWeb
-                    ? DashboardHomePage()
-                    : users.isVerifier ||
-                            users.lien_adresse!.isNotEmpty ||
-                            users.lien_cni!.isNotEmpty
-                        ? AppHomePage(users: users)
-                        : AppErrorCritiquePage(users: users),
+                pageToGo: DashboardAgentsHomePage(),
                 replacePage: true,
               );
             }
@@ -73,14 +61,14 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       } else {
         Fonctions().openPageToGo(
           context: context,
-          pageToGo: kIsWeb ? DashboardLoginPage() : AppLoginPage(),
+          pageToGo: DashboardAgentsLoginPage(),
           replacePage: true,
         );
       }
     } else {
       Fonctions().openPageToGo(
         context: context,
-        pageToGo: kIsWeb ? DashboardLoginPage() : AppLoginPage(),
+        pageToGo: DashboardAgentsLoginPage(),
         replacePage: true,
       );
     }
@@ -88,7 +76,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
 
   @override
   void initState() {
-    checkUsers();
+    checkAgents();
     super.initState();
   }
 
@@ -96,6 +84,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   Widget build(BuildContext context) {
     return MyBodyPage(
       backColor: Colors.white,
+      colorRound: true,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

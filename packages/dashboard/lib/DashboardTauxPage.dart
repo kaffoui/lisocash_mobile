@@ -76,6 +76,7 @@ class _DashboardTauxPagesState extends State<DashboardTauxPages> {
 
   Widget _TauxListBloc({Key? key, bool showAsGrid = false, Function(Taux taux)? onItemPressed}) {
     return TauxListWidget(
+      key: key,
       showItemAsCard: false,
       canEditItem: true,
       canAddItem: true,

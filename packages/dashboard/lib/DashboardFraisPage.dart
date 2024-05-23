@@ -76,6 +76,7 @@ class _DashboardFraisPagesState extends State<DashboardFraisPages> {
 
   Widget _FraisListBloc({Key? key, bool showAsGrid = false, Function(Frais frais)? onItemPressed}) {
     return FraisListWidget(
+      key: key,
       showItemAsCard: false,
       canEditItem: true,
       canAddItem: true,

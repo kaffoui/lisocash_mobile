@@ -59,7 +59,7 @@ class _VueOperationState extends State<VueOperation> {
   Widget build(BuildContext context) {
     theme = Theme.of(context);
     return MouseRegion(
-      cursor: MaterialStateMouseCursor.clickable,
+      cursor: WidgetStateMouseCursor.clickable,
       child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {

@@ -276,7 +276,11 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
                             text: "Oui",
                             action: () async {
                               await Preferences.clearData().then((value) {
-                                Fonctions().openPageToGo(context: context, pageToGo: SplashScreenPage(), replacePage: true);
+                                Fonctions().openPageToGo(
+                                  context: context,
+                                  pageToGo: SplashScreenPage(),
+                                  replacePage: true,
+                                );
                               });
                             },
                           ),
@@ -302,7 +306,6 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
         });
       },
     );
-
     super.initState();
     sendToken();
   }
@@ -319,6 +322,7 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
       isNotRoot: Fonctions().isSmallScreen(context),
       leadingWidget: !Fonctions().isSmallScreen(context) ? Container() : null,
     );
+
     return MyBodyPage(
       child: Scaffold(
         key: scaffoldKey,
@@ -326,11 +330,14 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
         drawer: Fonctions().isSmallScreen(context) ? myMenuWidget : null,
         body: Row(
           children: [
-            if (!Fonctions().isSmallScreen(context)) Container(width: menuCollapsed ? 80 : 220, child: myMenuWidget),
+            if (!Fonctions().isSmallScreen(context))
+              Container(width: menuCollapsed ? 80 : 220, child: myMenuWidget),
             Expanded(
               child: Column(
                 children: [
-                  if (!Fonctions().isSmallScreen(context) && menuItemsList[currentMenuIndex].mayShowParentAppBar == true) globalAppBar,
+                  if (!Fonctions().isSmallScreen(context) &&
+                      menuItemsList[currentMenuIndex].mayShowParentAppBar == true)
+                    globalAppBar,
                   if (menuItemsList[currentMenuIndex].page != null)
                     Expanded(
                       child: MaterialApp(
@@ -341,7 +348,6 @@ class _DashboardHomePageState extends State<DashboardHomePage> {
                           colorScheme: ColorScheme.fromSeed(
                             seedColor: Constants.kAccentColor,
                             secondary: Constants.kSecondColor,
-                            background: Colors.white,
                           ),
                           useMaterial3: true,
                           iconTheme: IconThemeData(color: Colors.white),

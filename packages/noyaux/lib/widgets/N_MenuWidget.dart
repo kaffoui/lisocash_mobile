@@ -70,7 +70,8 @@ class NMenuWidget extends StatefulWidget {
   State<NMenuWidget> createState() => _NMenuWidgetState();
 }
 
-class _NMenuWidgetState extends State<NMenuWidget> with SingleTickerProviderStateMixin<NMenuWidget> {
+class _NMenuWidgetState extends State<NMenuWidget>
+    with SingleTickerProviderStateMixin<NMenuWidget> {
   bool isCollapsed = true, expandPanel = false;
   int _selectedIndex = 0;
   double maxWidth = 250;
@@ -159,8 +160,10 @@ class _NMenuWidgetState extends State<NMenuWidget> with SingleTickerProviderStat
                         setState(() {
                           isCollapsed = !isCollapsed;
                         });
-                        if (widget.onMenuCollapseChange != null) widget.onMenuCollapseChange!(isCollapsed);
-                        if (widget.onMenuCollapseChange != null) widget.onMenuCollapseChange!(isCollapsed);
+                        if (widget.onMenuCollapseChange != null)
+                          widget.onMenuCollapseChange!(isCollapsed);
+                        if (widget.onMenuCollapseChange != null)
+                          widget.onMenuCollapseChange!(isCollapsed);
                       });
                     },
                   )
@@ -185,7 +188,7 @@ class _NMenuWidgetState extends State<NMenuWidget> with SingleTickerProviderStat
               if (onTap != null) onTap();
             },
             child: MouseRegion(
-              cursor: MaterialStateMouseCursor.clickable,
+              cursor: WidgetStateMouseCursor.clickable,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
@@ -195,12 +198,16 @@ class _NMenuWidgetState extends State<NMenuWidget> with SingleTickerProviderStat
                       child: Icon(
                         item.iconData,
                         size: 72,
-                        color: isActive ? widget.iconActiveColor : widget.iconNonActiveColor ?? Colors.black,
+                        color: isActive
+                            ? widget.iconActiveColor
+                            : widget.iconNonActiveColor ?? Colors.black,
                       ),
                     ),
                     NDisplayTextWidget(
                       text: "${item.name}",
-                      selectionColor: isActive ? widget.iconActiveColor : widget.iconNonActiveColor ?? Colors.black,
+                      selectionColor: isActive
+                          ? widget.iconActiveColor
+                          : widget.iconNonActiveColor ?? Colors.black,
                     ),
                   ],
                 ),
@@ -215,7 +222,9 @@ class _NMenuWidgetState extends State<NMenuWidget> with SingleTickerProviderStat
                   child: Icon(
                     item.iconData,
                     size: 24,
-                    color: isActive ? widget.iconActiveColor : widget.iconNonActiveColor ?? Colors.black,
+                    color: isActive
+                        ? widget.iconActiveColor
+                        : widget.iconNonActiveColor ?? Colors.black,
                   ),
                 ),
               )
@@ -225,14 +234,18 @@ class _NMenuWidgetState extends State<NMenuWidget> with SingleTickerProviderStat
                   child: Icon(
                     item.iconData,
                     size: 24,
-                    color: isActive ? widget.iconActiveColor : widget.iconNonActiveColor ?? Colors.black,
+                    color: isActive
+                        ? widget.iconActiveColor
+                        : widget.iconNonActiveColor ?? Colors.black,
                   ),
                 ),
                 title: !isCollapsed
                     ? NDisplayTextWidget(
                         text: "${item.name}",
                         maxLines: 1,
-                        textColor: isActive ? widget.iconActiveColor : widget.iconNonActiveColor ?? Colors.black,
+                        textColor: isActive
+                            ? widget.iconActiveColor
+                            : widget.iconNonActiveColor ?? Colors.black,
                         overflow: TextOverflow.ellipsis,
                       )
                     : null,
@@ -243,7 +256,9 @@ class _NMenuWidgetState extends State<NMenuWidget> with SingleTickerProviderStat
                         child: Icon(
                           widget.iconActive ?? Icons.arrow_right,
                           size: 18,
-                          color: isActive ? widget.iconActiveColor : widget.iconNonActiveColor ?? Colors.black,
+                          color: isActive
+                              ? widget.iconActiveColor
+                              : widget.iconNonActiveColor ?? Colors.black,
                         ),
                       )
                     : null,

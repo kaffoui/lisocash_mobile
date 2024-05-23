@@ -395,6 +395,9 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                   children: <Widget>[
                     NDropDownWidget(
                       title: "Pays de réception",
+                      titleWeight: FontWeight.w700,
+                      subtitle:
+                          "Veuillez sélectionner le pays de réception parmi les options disponibles. Ce choix déterminera la devise utilisée pour votre transaction.",
                       initialObject: initialPays,
                       listObjet: pays,
                       buildItem: (valuePays) {
@@ -419,10 +422,26 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                           Row(
                             children: [
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: EdgeInsets.only(left: 8.0, right: 16),
                                 child: NDisplayTextWidget(
                                   text: "Moyens de paiement",
                                   theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.only(left: 8.0, right: 16, top: 12),
+                                  child: NDisplayTextWidget(
+                                    text:
+                                        "Veuillez sélectionner votre moyen de paiement préféré parmi les options disponibles. Les options peuvent varier en fonction de votre région.",
+                                    theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                                    overflow: null,
+                                  ),
                                 ),
                               ),
                             ],
@@ -463,6 +482,7 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                 child: NDisplayTextWidget(
                                   text: "Montant",
                                   theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
@@ -476,15 +496,32 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                     style: Style.defaultTextStyle(
                                       textSize: 10.0,
                                       textColor: cannot_enter_solde ? Colors.red : null,
+                                      textWeight: FontWeight.w700,
                                     ),
                                   ),
                                 ],
                               ),
                           ],
                         ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.only(left: 8.0, right: 16, top: 12),
+                                child: NDisplayTextWidget(
+                                  text:
+                                      "Veuillez entrer le montant à envoyer et vérifier les informations relatives à votre solde et aux frais de transaction.",
+                                  theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                                  overflow: null,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         NCardWidget(
                           cardColor: Colors.white,
                           borderRadius: BorderRadius.circular(12.0),
+                          elevation: .9,
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 12.0),
                             child: Column(
@@ -626,6 +663,22 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                                 child: NDisplayTextWidget(
                                   text: "Motif de transaction",
                                   theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.only(left: 8.0, right: 16, top: 12),
+                                child: NDisplayTextWidget(
+                                  text:
+                                      "Veuillez sélectionner un motif pour votre transaction. Cette information nous aide à mieux comprendre la nature de votre envoi.",
+                                  theme: BASE_TEXT_THEME.LABEL_MEDIUM,
+                                  overflow: null,
                                 ),
                               ),
                             ),
@@ -643,6 +696,9 @@ class _AppSendMoneyState extends State<AppSendMoney> {
                         SizedBox(height: 6.0),
                         NTextInputWidget(
                           title: "Destinataire",
+                          titleWeight: FontWeight.w700,
+                          subtitle:
+                              "Veuillez choisir le destinataire de votre transaction parmi la liste des utilisateurs disponibles.",
                           textController: userToSendController,
                           validationKey: userToSendControllerKey,
                           isRequired: true,

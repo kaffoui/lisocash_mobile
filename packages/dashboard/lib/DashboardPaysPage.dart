@@ -76,6 +76,7 @@ class _DashboardPaysPagesState extends State<DashboardPaysPages> {
 
   Widget _PaysListBloc({Key? key, bool showAsGrid = false, Function(Pays pays)? onItemPressed}) {
     return PaysListWidget(
+      key: key,
       showItemAsCard: false,
       canEditItem: true,
       canAddItem: true,

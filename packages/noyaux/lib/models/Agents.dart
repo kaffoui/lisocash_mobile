@@ -7,6 +7,7 @@ class Agents {
   int? id_users;
   String? identifiant_unique;
   int? solde;
+  String? ip_adresse;
   String? date_enregistrement;
 
   Users? users;
@@ -48,19 +49,16 @@ class Agents {
   factory Agents.fromMap(Map<String, dynamic> map) {
     return Agents(
       id_users: map['id_users'] != null ? map['id_users'] as int : null,
-      identifiant_unique:
-          map['identifiant_unique'] != null ? map['identifiant_unique'] as String : null,
+      identifiant_unique: map['identifiant_unique'] != null ? map['identifiant_unique'] as String : null,
       solde: map['solde'] != null ? map['solde'] as int : null,
-      date_enregistrement:
-          map['date_enregistrement'] != null ? map['date_enregistrement'] as String : null,
+      date_enregistrement: map['date_enregistrement'] != null ? map['date_enregistrement'] as String : null,
       users: map['users'] != null ? Users.fromMap(map['users'] as Map<String, dynamic>) : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Agents.fromJson(String source) =>
-      Agents.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Agents.fromJson(String source) => Agents.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -80,10 +78,6 @@ class Agents {
 
   @override
   int get hashCode {
-    return id_users.hashCode ^
-        identifiant_unique.hashCode ^
-        solde.hashCode ^
-        date_enregistrement.hashCode ^
-        users.hashCode;
+    return id_users.hashCode ^ identifiant_unique.hashCode ^ solde.hashCode ^ date_enregistrement.hashCode ^ users.hashCode;
   }
 }

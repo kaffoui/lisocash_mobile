@@ -58,10 +58,13 @@ class Api {
     }
   }
 
-  Future getAgents({String? id}) async {
+  Future getAgents({String? id, String? mail, String? password}) async {
     Map<String, String> params = {
-      "id": id != null ? "$id" : "",
+      "id": id ?? "",
+      "mail": mail ?? "",
+      "password": password ?? "",
     };
+
     Uri url = Uri.https(Url.urlServer, Url.AgentsUrl, params);
 
     try {
@@ -69,7 +72,7 @@ class Api {
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
       if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
-        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Agents}$id', data: json);
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Agents}$id$mail$password', data: json);
         return true;
       } else {
         return false;
@@ -140,8 +143,7 @@ class Api {
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
       if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
-        await Preferences.saveData(
-            key: '${Preferences.PREFS_KEY_Operation}$id$user_id_from$user_id_to', data: json);
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Operation}$id$user_id_from$user_id_to', data: json);
         return true;
       } else {
         return false;
@@ -189,8 +191,7 @@ class Api {
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
 
       if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
-        await Preferences.saveData(
-            key: '${Preferences.PREFS_KEY_Notifications}$id$user_id', data: json);
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Notifications}$id$user_id', data: json);
         return true;
       } else {
         return false;
@@ -238,8 +239,7 @@ class Api {
 
       String json = jsonEncode(jsonDecode(response.body)['data']).toString();
       if (response.statusCode == 200 && jsonDecode(response.body)['code'] == "100") {
-        await Preferences.saveData(
-            key: '${Preferences.PREFS_KEY_Users}$id$mail$password', data: json);
+        await Preferences.saveData(key: '${Preferences.PREFS_KEY_Users}$id$mail$password', data: json);
         return true;
       } else {
         return false;
@@ -273,15 +273,13 @@ class Api {
   }
 
   Future<List<Currency>> fetchCurrency(String? value) async {
-    final response = await http.get(
-        Uri.parse('https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=${value}'));
+    final response = await http.get(Uri.parse('https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=${value}'));
     var data = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
       List<Currency> currencies = [];
       for (var code in data["data"].keys) {
-        Currency currency = Currency(
-            code: data["data"][code]["code"], value: data["data"][code]["value"].toDouble());
+        Currency currency = Currency(code: data["data"][code]["code"], value: data["data"][code]["value"].toDouble());
         currencies.add(currency);
       }
       return currencies;
@@ -291,8 +289,8 @@ class Api {
   }
 
   Future<Currency> fetchExchangeRate(String? baseValue, String? targetValue) async {
-    final response = await http.get(Uri.parse(
-        'https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=${baseValue}&currencies=${targetValue}'));
+    final response =
+        await http.get(Uri.parse('https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=${baseValue}&currencies=${targetValue}'));
     var data = jsonDecode(response.body);
     if (response.statusCode == 200) {
       Currency currency = Currency(

@@ -58,6 +58,7 @@ class _DashboardOperationPagesState extends State<DashboardOperationPages> {
   Widget _OperationListBloc(
       {Key? key, bool showAsGrid = false, Function(Operation operation)? onItemPressed}) {
     return OperationListWidget(
+      key: key,
       showItemAsCard: false,
       canEditItem: false,
       canAddItem: false,
